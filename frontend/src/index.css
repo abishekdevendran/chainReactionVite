@@ -1,0 +1,4 @@
+/* postcss language support plugin */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
