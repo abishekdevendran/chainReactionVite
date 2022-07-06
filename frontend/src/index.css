@@ -2,3 +2,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --text-primary: #fff;
+    --text-secondary: #000;
+    --bg-primary: #2A2D43;
+    --bg-secondary: #7F2CCB;
+    --brand-primary: #ffa9e7;
+    --brand-secondary: #ff84e8;
+    --brand-tertiary: #7f2ccb;
+    --brand-grey-primary: #414361;
+    --brand-grey-secondary: #2a2d43;
+  }
+  .dark {
+    --text-primary: #000;
+    --text-secondary: #fff;
+    --bg-primary: #fff;
+    --bg-secondary: pink;
+  }
+}
