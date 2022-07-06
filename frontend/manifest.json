@@ -1,7 +1,7 @@
 {
-  "name": "Vite PWA",
-  "short_name": "Vite PWA",
-  "description": "A Vite starter app ready-to-go as a Progressive Web App.",
+  "name": "Chain Reaction Vite",
+  "short_name": "Chain Rxn",
+  "description": "An online multiplayer game of chain reaction.",
   "background_color": "#5a0fc8",
   "theme_color": "#5a0fc8",
   "display": "standalone",
