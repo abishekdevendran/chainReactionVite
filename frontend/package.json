@@ -6,12 +6,14 @@
     "start": "vite --open",
     "dev": "vite --open",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --port=8000 --host=localhost"
   },
   "dependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-hot-toast": "^2.2.0",
     "react-icons": "^4.4.0",
+    "react-router-dom": "^6.3.0",
     "workbox-recipes": "^6.2.4",
     "workbox-routing": "^6.2.4",
     "workbox-strategies": "^6.2.4"

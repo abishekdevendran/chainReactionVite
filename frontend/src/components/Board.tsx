@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useContext, useReducer, useRef, useState } from "react";
 import Square from "./Square";
+import popAudio from "../assets/pop.mp3";
+import toast from "react-hot-toast";
+import UserContext from "../contexts/UserContext";
+
+interface Player {
+  id: number;
+  uname: string;
+  color: string;
+  eliminated: boolean;
+  count: number;
+}
 
 interface BoardProps {
   n: number;
   m: number;
-  color: string;
   delay: number;
+  players: Player[];
 }
 
 interface BoardValue {
@@ -13,7 +24,8 @@ interface BoardValue {
   color: string;
 }
 
-const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
+const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
+  const { user, setUser } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
   const [board, setBoard] = useState(
     Array(m)
@@ -24,6 +36,45 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
         })
       )
   );
+  const playerCount = players.length;
+  const [turn, changeTurn] = useReducer((turn) => {
+    let n = 1;
+    while (players[(turn + n) % players.length].eliminated) {
+      if (n === playerCount - 1) {
+        console.log("Win condition");
+      }
+      n++;
+    }
+    return (turn + n) % playerCount;
+  }, 0);
+
+  const createPop = () => {
+    let audioinstance = new Audio(popAudio);
+    audioinstance.volume = 0.02;
+    audioinstance.play();
+  };
+
+  const forfeitManager = (id: number) => {
+    console.log(`Player ${id} has forfeited`);
+    let foundIndex = players.findIndex((player) => player.id === id);
+    let newBoard = [...board];
+    newBoard.forEach((row) => {
+      row.forEach((square) => {
+        if (square.color === players[foundIndex].color) {
+          square.color = "gray";
+        }
+      });
+    });
+    players[foundIndex].eliminated = true;
+    if (turn === foundIndex) {
+      changeTurn();
+    }
+    let remainderCount = players.filter((player) => !player.eliminated).length;
+    if (remainderCount === 1) {
+      console.log("Win condition");
+    }
+    setBoard(newBoard);
+  };
 
   const explosionCheck = (x: number, y: number) => {
     //corner check
@@ -61,55 +112,99 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
         if (y === 0) {
           newExplosions.push({ x: x + 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else if (y === m - 1) {
           newExplosions.push({ x: x + 1, y: y });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else {
           newExplosions.push({ x: x + 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 3,
+            color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+          };
         }
       } else if (x === n - 1) {
         if (y === 0) {
           newExplosions.push({ x: x - 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else if (y === m - 1) {
           newExplosions.push({ x: x - 1, y: y });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else {
           newExplosions.push({ x: x - 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 3,
+            color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+          };
         }
       } else if (y === 0) {
         newExplosions.push({ x: x + 1, y: y });
         newExplosions.push({ x: x - 1, y: y });
         newExplosions.push({ x: x, y: y + 1 });
-        newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+        newBoard[y][x] = {
+          value: newBoard[y][x].value - 3,
+          color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+        };
       } else if (y === m - 1) {
         newExplosions.push({ x: x + 1, y: y });
         newExplosions.push({ x: x - 1, y: y });
         newExplosions.push({ x: x, y: y - 1 });
-        newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+        newBoard[y][x] = {
+          value: newBoard[y][x].value - 3,
+          color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+        };
       } else {
         newExplosions.push({ x: x + 1, y: y });
         newExplosions.push({ x: x - 1, y: y });
         newExplosions.push({ x: x, y: y + 1 });
         newExplosions.push({ x: x, y: y - 1 });
-        newBoard[y][x] = { value: newBoard[y][x].value - 4, color: newBoard[y][x].value===4?"gray":color };
+        newBoard[y][x] = {
+          value: newBoard[y][x].value - 4,
+          color: newBoard[y][x].value === 4 ? "gray" : players[turn].color,
+        };
       }
     });
-    //update explosions to board
+    //update explosions and counts to board
     newExplosions.forEach(({ x, y }) => {
-      newBoard[y][x] = { value: board[y][x].value + 1, color: color };
+      if (newBoard[y][x].value !== 0) {
+        players[turn].count += newBoard[y][x].value;
+        let foundPlayer = players.find(
+          (player) => player.color === newBoard[y][x].color
+        );
+        if (foundPlayer) {
+          foundPlayer!.count -= newBoard[y][x].value;
+          if (foundPlayer!.count <= 0) {
+            foundPlayer!.eliminated = true;
+            console.log(`${foundPlayer!.uname} has been eliminated`);
+          }
+        }
+      }
+      newBoard[y][x] = {
+        value: board[y][x].value + 1,
+        color: players[turn].color,
+      };
     });
     setBoard(newBoard);
+    createPop();
     //eliminate duplicates
     newExplosions = newExplosions.filter(
       (value, index, self) =>
@@ -122,8 +217,9 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
     newExplosions = newExplosions.filter((explosion) => {
       return explosionCheck(explosion.x, explosion.y);
     });
-
+    //exit if no more explosions
     if (newExplosions.length === 0) {
+      changeTurn();
       setCanClick(true);
       return;
     } else {
@@ -139,16 +235,27 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
     if (!canClick) {
       return;
     }
+    if(players[turn].uname!==user.uname){
+      console.log("not your turn");
+      return;
+    }
     // //If not valid move, return.
-    if (board[y][x].color !== color && board[y][x].color !== "gray") {
+    if (board[y][x].color !== players[turn].color && board[y][x].value !== 0) {
       console.log("Invalid move");
       return;
     }
     let newBoard = [...board];
-    newBoard[y][x] = { value: board[y][x].value + 1, color: color };
+    newBoard[y][x] = {
+      value: board[y][x].value + 1,
+      color: players[turn].color,
+    };
     setBoard(newBoard);
-    // //If no explosions caused, return.
+    createPop();
+    //Increment count for player
+    players[turn].count++;
+    //If no explosions caused, return.
     if (explosionCheck(x, y) === false) {
+      changeTurn();
       console.log("No explosions");
       return;
     } else {
@@ -159,8 +266,12 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
   };
 
   return (
-    <div className="font-poppins">
-      Game Board
+    <div
+      className="font-poppins"
+      style={{ backgroundColor: players[turn].color }}
+    >
+      Game Board {players[turn].uname}{" "}
+      {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
       <div className="board flex flex-col items-center justify-center">
         {board.map((row, i) => {
           return (
@@ -179,6 +290,17 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
             </div>
           );
         })}
+      </div>
+      <div>
+        {players.map((player) => {
+          return (
+            <div key={player.color}>
+              {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
+              <button onClick={() => forfeitManager(player.id)}>Foreit</button>
+            </div>
+          );
+        })}
+        <button onClick={() => changeTurn()}>Change Turn</button>
       </div>
     </div>
   );
