@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import Protectedroute from "./components/Protectedroute";
 import Game from "./pages/Game";
 import Login from "./pages/Login";
+import Room from "./pages/Room";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -20,14 +21,24 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Routes>
             <Route path="/" element={<App />}></Route>
             <Route path="/login" element={<Login />}></Route>
-            <Route
-              path="/game"
-              element={
-                <Protectedroute>
-                  <Game />
-                </Protectedroute>
-              }
-            ></Route>
+            <Route path='/game'>
+              <Route
+                path=""
+                element={
+                  <Protectedroute>
+                    <Room />
+                  </Protectedroute>
+                }
+              />
+              <Route
+                path=":roomCode"
+                element={
+                  <Protectedroute>
+                    <Game />
+                  </Protectedroute>
+                }
+              />
+            </Route>
           </Routes>
         </BrowserRouter>
         <Toaster />

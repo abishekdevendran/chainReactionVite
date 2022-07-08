@@ -27,15 +27,20 @@ interface BoardValue {
 const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
   const { user, setUser } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
-  const [board, setBoard] = useState(
-    Array(m)
-      .fill(0)
-      .map((row) =>
-        new Array(n).fill(0).map(() => {
-          return { value: 0, color: "gray" };
-        })
-      )
-  );
+  const [board, setBoard] = useState(() => {
+    let localBoard = localStorage.getItem("board");
+    if (localBoard) {
+      return JSON.parse(localBoard);
+    } else {
+      return Array(m)
+        .fill(0)
+        .map((row) =>
+          new Array(n).fill(0).map(() => {
+            return { value: 0, color: "gray" };
+          })
+        );
+    }
+  });
   const playerCount = players.length;
   const [turn, changeTurn] = useReducer((turn) => {
     let n = 1;
@@ -77,11 +82,12 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
     setBoard(newBoard);
   };
 
-  const winManager= () => {
+  const winManager = () => {
     let winner = players.find((player) => !player.eliminated);
     toast.success(`Player ${winner?.uname} has won!`);
     setCanClick(false);
-  }
+    localStorage.removeItem("board");
+  };
 
   const explosionCheck = (x: number, y: number) => {
     //corner check
@@ -210,6 +216,7 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
         value: board[y][x].value + 1,
         color: players[turn].color,
       };
+      localStorage.setItem("board", JSON.stringify(newBoard));
     });
     setBoard(newBoard);
     createPop();
@@ -243,7 +250,7 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
     if (!canClick) {
       return;
     }
-    if(players[turn].uname!==user.uname){
+    if (players[turn].uname !== user.uname) {
       toast.error("Wait your turn");
       return;
     }
@@ -260,6 +267,7 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
     };
     setBoard(newBoard);
     createPop();
+    localStorage.setItem("board", JSON.stringify(newBoard));
     //Increment count for player
     players[turn].count++;
     //If no explosions caused, return.

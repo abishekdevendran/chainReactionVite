@@ -47,14 +47,16 @@ const Navbar = () => {
     >
       <div className="container flex justify-between items-center font-poppins text-primary py-4 px-4 max-w-screen-lg transition-all ease-in-ease-out duration-1000 text-ellipsis">
         <h1
-          className={`pb-2 text-4xl sm:text-5xl font-semibold ${user.isLoggedIn?"cursor-default":"cursor-pointer"} whitespace-nowrap  ${
+          className={`pb-2 text-4xl sm:text-5xl font-semibold ${
+            user.isLoggedIn ? "cursor-default" : "cursor-pointer"
+          } whitespace-nowrap  ${
             darkMode
               ? "bg-gradient-to-r from-pink-500 to-violet-500"
               : "bg-gradient-to-r from-indigo-300 to-purple-400"
           }  bg-clip-text text-transparent transition-all ease-in-ease-out duration-1000`}
         >
           {user.isLoggedIn ? (
-            "Chain Reaction"
+            <NavLink to="/game">Chain Reaction</NavLink>
           ) : (
             <NavLink to="/">Chain Reaction</NavLink>
           )}
