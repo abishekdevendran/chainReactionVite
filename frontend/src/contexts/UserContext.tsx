@@ -8,20 +8,20 @@ interface Iuser{
 const UserContext = createContext<any>({});
 
 export const UserContextProvider = ({ children }) => {
-  const [user, setUser] = useState({
-    uname: "Abishek",
-    isLoggedIn: true,
+  const [user, setUser] = useState(()=>{
+    const user = localStorage.getItem("user");
+    return user ? JSON.parse(user) : {name: null, isLoggedIn: false};
   });
 
-  useEffect(() => {
-    const value = localStorage.getItem("user");
-    console.log(value);
-    if (value === null) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      setUser(JSON.parse(value));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const value = localStorage.getItem("user");
+  //   console.log(value);
+  //   if (value === null) {
+  //     localStorage.setItem("user", JSON.stringify(user));
+  //   } else {
+  //     setUser(JSON.parse(value));
+  //   }
+  // }, []);
 
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(user));

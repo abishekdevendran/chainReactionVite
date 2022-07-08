@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useContext, RefObject } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useContext,
+  RefObject,
+} from "react";
 import toast from "react-hot-toast";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { FiSun, FiMoon } from "react-icons/fi";
@@ -40,17 +46,19 @@ const Navbar = () => {
       }`}
     >
       <div className="container flex justify-between items-center font-poppins text-primary py-4 px-4 max-w-screen-lg transition-all ease-in-ease-out duration-1000 text-ellipsis">
-        <NavLink to="/">
-          <h1
-            className={`pb-2 text-4xl sm:text-5xl font-semibold cursor-pointer whitespace-nowrap  ${
-              darkMode
-                ? "bg-gradient-to-r from-pink-500 to-violet-500"
-                : "bg-gradient-to-r from-indigo-300 to-purple-400"
-            }  bg-clip-text text-transparent transition-all ease-in-ease-out duration-1000`}
-          >
-            Chain Reaction
-          </h1>
-        </NavLink>
+        <h1
+          className={`pb-2 text-4xl sm:text-5xl font-semibold ${user.isLoggedIn?"cursor-default":"cursor-pointer"} whitespace-nowrap  ${
+            darkMode
+              ? "bg-gradient-to-r from-pink-500 to-violet-500"
+              : "bg-gradient-to-r from-indigo-300 to-purple-400"
+          }  bg-clip-text text-transparent transition-all ease-in-ease-out duration-1000`}
+        >
+          {user.isLoggedIn ? (
+            "Chain Reaction"
+          ) : (
+            <NavLink to="/">Chain Reaction</NavLink>
+          )}
+        </h1>
         <div className="right flex">
           {!user.isLoggedIn ? (
             <ul className="hidden sm:flex">
@@ -63,7 +71,7 @@ const Navbar = () => {
             </ul>
           ) : (
             <ul className="hidden sm:flex sm:items-center sm:text-right">
-              <li className="p-2 cursor-default font-semibold">{`Welcome, ${user.name}`}</li>
+              <li className="p-2 cursor-default font-semibold">{`Welcome, ${user.uname}`}</li>
               <li className="p-2 hover:opacity-80 cursor-pointer">
                 {user.loginCount}
               </li>

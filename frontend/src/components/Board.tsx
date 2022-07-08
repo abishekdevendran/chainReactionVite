@@ -41,7 +41,7 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
     let n = 1;
     while (players[(turn + n) % players.length].eliminated) {
       if (n === playerCount - 1) {
-        console.log("Win condition");
+        winManager();
       }
       n++;
     }
@@ -56,6 +56,7 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
 
   const forfeitManager = (id: number) => {
     console.log(`Player ${id} has forfeited`);
+    toast(`Player ${id} has forfeited`);
     let foundIndex = players.findIndex((player) => player.id === id);
     let newBoard = [...board];
     newBoard.forEach((row) => {
@@ -71,10 +72,15 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
     }
     let remainderCount = players.filter((player) => !player.eliminated).length;
     if (remainderCount === 1) {
-      console.log("Win condition");
+      winManager();
     }
     setBoard(newBoard);
   };
+
+  const winManager= () => {
+    let winner = players.find((player) => !player.eliminated);
+    toast(`Player ${winner?.uname} has won!`);
+  }
 
   const explosionCheck = (x: number, y: number) => {
     //corner check
@@ -195,6 +201,7 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
           if (foundPlayer!.count <= 0) {
             foundPlayer!.eliminated = true;
             console.log(`${foundPlayer!.uname} has been eliminated`);
+            toast.success(`${foundPlayer!.uname} has been eliminated`);
           }
         }
       }
@@ -236,12 +243,13 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
       return;
     }
     if(players[turn].uname!==user.uname){
-      console.log("not your turn");
+      toast.error("Wait your turn");
       return;
     }
     // //If not valid move, return.
     if (board[y][x].color !== players[turn].color && board[y][x].value !== 0) {
       console.log("Invalid move");
+      toast.error("Invalid move");
       return;
     }
     let newBoard = [...board];
@@ -256,7 +264,6 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
     //If no explosions caused, return.
     if (explosionCheck(x, y) === false) {
       changeTurn();
-      console.log("No explosions");
       return;
     } else {
       setCanClick(false);

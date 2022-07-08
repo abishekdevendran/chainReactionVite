@@ -28,7 +28,6 @@ const players = [
 const Gamemanager = () => {
   return (
     <div className='GameManager pt-16 flex min-w-full flex-col items-center justify-center'>
-      Gamemanager
       <Board n={8} m={6} delay={1} players={players}/>
     </div>
   );
