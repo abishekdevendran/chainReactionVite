@@ -79,7 +79,8 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
 
   const winManager= () => {
     let winner = players.find((player) => !player.eliminated);
-    toast(`Player ${winner?.uname} has won!`);
+    toast.success(`Player ${winner?.uname} has won!`);
+    setCanClick(false);
   }
 
   const explosionCheck = (x: number, y: number) => {
