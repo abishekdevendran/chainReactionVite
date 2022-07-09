@@ -1,4 +1,3 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
@@ -14,7 +13,6 @@ import Room from "./pages/Room";
 import { SocketContextProvider } from "./contexts/SocketContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
     <DarkModeContextProvider>
       <UserContextProvider>
         <SocketContextProvider>
@@ -47,5 +45,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </SocketContextProvider>
       </UserContextProvider>
     </DarkModeContextProvider>
-  </React.StrictMode>
 );

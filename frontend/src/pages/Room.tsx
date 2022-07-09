@@ -1,40 +1,30 @@
 import { generateSlug } from "random-word-slugs";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import SocketContext from "../contexts/SocketContext";
-import UserContext from "../contexts/UserContext";
 
 const Room = () => {
-  const [data, setData] = useState("");
   const { socket } = useContext(SocketContext);
-  const { user } = useContext(UserContext);
+  const [data, setData] = useState("");
   const navigate = useNavigate();
-  const roomJoinManager = (roomCode) => {
-    console.log(user);
-    socket.emit("roomJoin", roomCode, user, (err) => {
-      if (err) {
-        toast.error(err);
-      } else {
-        localStorage.removeItem("board");
-        toast.success("Room joined successfully");
-        navigate(`/game/${roomCode}`);
-      }
-    });
-  };
   const roomJoinHandler = (e) => {
     if (data.length <= 2) {
       toast.error("Not a valid room code");
       return;
     }
     e.preventDefault();
-    roomJoinManager(data);
+    navigate(`/game/${data}`);
   };
   const roomCreateHandler = (e) => {
     e.preventDefault();
     let roomCode = generateSlug(1);
-    roomJoinManager(roomCode);
+    navigate(`/game/${roomCode}`);
   };
+  useEffect(() => {
+    console.log("Roooms cleared");
+    socket.emit("clearRooms");
+  },[])
   return (
     <div className="min-h-screen flex items-center justify-center h-screen bg-bg-primary">
       <form onSubmit={roomJoinHandler}>

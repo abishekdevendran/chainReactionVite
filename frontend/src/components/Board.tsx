@@ -10,6 +10,7 @@ interface Player {
   color: string;
   eliminated: boolean;
   count: number;
+  isReady: boolean;
 }
 
 interface BoardProps {
