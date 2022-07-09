@@ -224,6 +224,13 @@ const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) 
     });
     setBoard(newBoard);
     createPop();
+
+    //Stop Looping on win conition
+    if(players.filter((player) => !player.eliminated).length === 1) {
+      winManager();
+      return;
+    }
+
     //eliminate duplicates
     newExplosions = newExplosions.filter(
       (value, index, self) =>
