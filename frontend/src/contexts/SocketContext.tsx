@@ -16,8 +16,8 @@ interface ClientToServerEvents {
 
 export const SocketContextProvider = ({ children }) => {
 //   const socket = useRef();
-  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = io("localhost:5000",{
-    reconnection: false,
+  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = io(window.location.hostname+":5000",{
+    reconnection: true,
     closeOnBeforeunload: true,
   });
   useEffect(() => {

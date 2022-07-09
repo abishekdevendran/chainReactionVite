@@ -14,14 +14,15 @@ export default defineConfig({
       manifest,
     }),
   ],
-  server: {
-    // cors:false
-    // proxy: {
-    //   "*": {
-    //     target: "http://localhost:5000",
-    //     changeOrigin: true,
-    //     secure: false,
-    //   },
-    // },
-  },
+  // server: {
+  //   cors: false,
+  //   proxy: {
+  //     "/socketio": {
+  //       target: "ws://localhost:5000",
+  //       secure: false,
+  //       changeOrigin: true,
+  //       ws: true,
+  //     },
+  //   },
+  // },
 });

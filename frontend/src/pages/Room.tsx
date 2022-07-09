@@ -1,25 +1,39 @@
 import { generateSlug } from "random-word-slugs";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import SocketContext from "../contexts/SocketContext";
+import UserContext from "../contexts/UserContext";
 
 const Room = () => {
   const [data, setData] = useState("");
+  const { socket } = useContext(SocketContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
+  const roomJoinManager = (roomCode) => {
+    console.log(user);
+    socket.emit("roomJoin", roomCode, user, (err) => {
+      if (err) {
+        toast.error(err);
+      } else {
+        localStorage.removeItem("board");
+        toast.success("Room joined successfully");
+        navigate(`/game/${roomCode}`);
+      }
+    });
+  };
   const roomJoinHandler = (e) => {
     if (data.length <= 2) {
       toast.error("Not a valid room code");
       return;
     }
     e.preventDefault();
-    localStorage.removeItem("board");
-    navigate(`/game/${data}`);
+    roomJoinManager(data);
   };
   const roomCreateHandler = (e) => {
     e.preventDefault();
     let roomCode = generateSlug(1);
-    localStorage.removeItem("board");
-    navigate(`/game/${roomCode}`);
+    roomJoinManager(roomCode);
   };
   return (
     <div className="min-h-screen flex items-center justify-center h-screen bg-bg-primary">
