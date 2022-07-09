@@ -14,4 +14,14 @@ export default defineConfig({
       manifest,
     }),
   ],
+  server: {
+    // cors:false
+    // proxy: {
+    //   "*": {
+    //     target: "http://localhost:5000",
+    //     changeOrigin: true,
+    //     secure: false,
+    //   },
+    // },
+  },
 });

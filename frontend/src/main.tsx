@@ -11,37 +11,40 @@ import Protectedroute from "./components/Protectedroute";
 import Game from "./pages/Game";
 import Login from "./pages/Login";
 import Room from "./pages/Room";
+import { SocketContextProvider } from "./contexts/SocketContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <DarkModeContextProvider>
       <UserContextProvider>
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<App />}></Route>
-            <Route path="/login" element={<Login />}></Route>
-            <Route path='/game'>
-              <Route
-                path=""
-                element={
-                  <Protectedroute>
-                    <Room />
-                  </Protectedroute>
-                }
-              />
-              <Route
-                path=":roomCode"
-                element={
-                  <Protectedroute>
-                    <Game />
-                  </Protectedroute>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-        <Toaster />
+        <SocketContextProvider>
+          <BrowserRouter>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<App />}></Route>
+              <Route path="/login" element={<Login />}></Route>
+              <Route path="/game">
+                <Route
+                  path=""
+                  element={
+                    <Protectedroute>
+                      <Room />
+                    </Protectedroute>
+                  }
+                />
+                <Route
+                  path=":roomCode"
+                  element={
+                    <Protectedroute>
+                      <Game />
+                    </Protectedroute>
+                  }
+                />
+              </Route>
+            </Routes>
+          </BrowserRouter>
+          <Toaster />
+        </SocketContextProvider>
       </UserContextProvider>
     </DarkModeContextProvider>
   </React.StrictMode>

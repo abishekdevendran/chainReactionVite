@@ -1,0 +1,27 @@
+{
+  "name": "chainreactionvite",
+  "version": "1.0.0",
+  "description": "Chain Reaction Multiplayer Online Game",
+  "main": "index.js",
+  "type":"module",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abishekdevendran/chainReactionVite.git"
+  },
+  "author": "Abishek Devendran",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abishekdevendran/chainReactionVite/issues"
+  },
+  "homepage": "https://github.com/abishekdevendran/chainReactionVite#readme",
+  "dependencies": {
+    "socket.io": "^4.5.1"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.6",
+    "utf-8-validate": "^5.0.9"
+  }
+}

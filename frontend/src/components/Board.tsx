@@ -17,6 +17,7 @@ interface BoardProps {
   m: number;
   delay: number;
   players: Player[];
+  setHasStarted: (hasStarted: boolean) => void;
 }
 
 interface BoardValue {
@@ -24,7 +25,7 @@ interface BoardValue {
   color: string;
 }
 
-const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
+const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) => {
   const { user, setUser } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
   const [board, setBoard] = useState(() => {
@@ -87,6 +88,9 @@ const Board = ({ n = 6, m = 8, delay = 1, players }: BoardProps) => {
     toast.success(`Player ${winner?.uname} has won!`);
     setCanClick(false);
     localStorage.removeItem("board");
+    setTimeout(() => {
+      setHasStarted(false);
+    },5*delay*1000);
   };
 
   const explosionCheck = (x: number, y: number) => {

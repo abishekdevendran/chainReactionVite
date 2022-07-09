@@ -20,7 +20,7 @@ const Login = () => {
     navigate("/game");
   };
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="min-h-screen flex items-center justify-center h-screen">
       <form onSubmit={submitHandler}>
         <label>Username:</label>
         <input

@@ -22,7 +22,7 @@ const Room = () => {
     navigate(`/game/${roomCode}`);
   };
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="min-h-screen flex items-center justify-center h-screen bg-bg-primary">
       <form onSubmit={roomJoinHandler}>
         <label>RoomCode:</label>
         <input
