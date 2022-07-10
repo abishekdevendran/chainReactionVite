@@ -57,7 +57,6 @@ const Board = ({
       );
   });
   const [turn, changeTurn] = useReducer((turn) => {
-    console.log("turn changed");
     let n = 1;
     while (players[(turn + n) % players.length].eliminated) {
       if (n === players.length - 1) {
@@ -66,7 +65,6 @@ const Board = ({
       n++;
     }
     let newTurn = (turn + n) % players.length;
-    console.log("newturn:", newTurn, "oldturn:", turn);
     return newTurn;
   }, 0);
 
@@ -295,7 +293,6 @@ const Board = ({
       value: board[y][x].value + 1,
       color: players[turn].color,
     };
-    console.log(newBoard[y][x], players[turn], "turn:", turn);
     setBoard(newBoard);
     createPop();
     //Increment count for player
@@ -314,7 +311,6 @@ const Board = ({
   //Ill never get back the last 3 hours of my life. Stupid dependency array. Might as well put every state in event listener deps lol kekw.
   useEffect(() => {
     socket.on("makeMove", ({ x, y }) => {
-      console.log("turn at socket");
       moveHandler(x, y);
     });
     return () => {
@@ -357,27 +353,7 @@ const Board = ({
             </div>
           );
         })}
-        <button onClick={() => changeTurn()}>Change Turn</button>
       </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          moveHandler(dummyX, dummyY);
-        }}
-      >
-        <input
-          type="text"
-          placeholder="x"
-          onChange={(e) => setDummyX(parseInt(e.target.value))}
-        />
-        <input
-          type="text"
-          placeholder="y"
-          onChange={(e) => setDummyY(parseInt(e.target.value))}
-        />
-        <button type="submit">Submit</button>
-      </form>
     </div>
   );
 };
