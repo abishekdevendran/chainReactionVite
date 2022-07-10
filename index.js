@@ -25,16 +25,29 @@ const io = new Server(httpServer, {
 console.log(`Server started on port ${PORT}`);
 
 let rooms = [];
+let colors = [
+  "#66664D",
+  "#991AFF",
+  "#E666FF",
+  "#4DB3FF",
+  "#1AB399",
+  "#E666B3",
+  "#33991A",
+  "#CC9999",
+  "#B3B31A",
+  "#00E680",
+];
 
 io.on("connection", (socket) => {
   socket.on("roomJoin", (roomCode, user, fn) => {
     socket.join(roomCode);
     console.log("joined room: " + roomCode);
     let room = rooms.find((r) => r.roomCode === roomCode);
+    let id=room ? room.users.length + 1 : 1
     let userObject = {
-      id: room ? room.users.length + 1 : 1,
+      id: id,
       uname: user.uname,
-      color: "#3cccbc",
+      color: colors[id],
       eliminated: room ? (room.hasStarted ? true : false) : false,
       count: 0,
       isReady: false,
@@ -74,6 +87,10 @@ io.on("connection", (socket) => {
     console.log(socket.rooms);
     socket.leaveAll();
   });
+
+  socket.on("makeMove",({x,y,roomCode})=>{
+    socket.to(roomCode).emit("makeMove",{x,y})
+  })
 });
 
 io.sockets.adapter.on("delete-room", (roomCode) => {
@@ -96,6 +113,7 @@ io.sockets.adapter.on("leave-room", (roomCode, id) => {
       });
       room.users = room.users.map((user, index) => {
         user.id = index + 1;
+        user.color=colors[index+1];
         return user;
       });
       io.to(roomCode).emit("updatePlayers", room.users);

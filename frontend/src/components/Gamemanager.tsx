@@ -33,8 +33,8 @@ const Gamemanager = ({players, setHasStarted}) => {
         </button>
       </div>
       <Board
-        n={8}
-        m={6}
+        n={4}
+        m={5}
         delay={1}
         players={players}
         setHasStarted={setHasStarted}

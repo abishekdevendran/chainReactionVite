@@ -1,8 +1,16 @@
-import React, { useContext, useReducer, useRef, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import Square from "./Square";
 import popAudio from "../assets/pop.mp3";
 import toast from "react-hot-toast";
 import UserContext from "../contexts/UserContext";
+import SocketContext from "../contexts/SocketContext";
+import { useParams } from "react-router-dom";
 
 interface Player {
   id: number;
@@ -26,33 +34,40 @@ interface BoardValue {
   color: string;
 }
 
-const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) => {
-  const { user, setUser } = useContext(UserContext);
+const Board = ({
+  n = 6,
+  m = 8,
+  delay = 1,
+  players,
+  setHasStarted,
+}: BoardProps) => {
+  const { roomCode } = useParams();
+  const { socket } = useContext(SocketContext);
+  const [dummyX, setDummyX] = useState(0);
+  const [dummyY, setDummyY] = useState(0);
+  const { user } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
   const [board, setBoard] = useState(() => {
-    let localBoard = localStorage.getItem("board");
-    if (localBoard) {
-      return JSON.parse(localBoard);
-    } else {
-      return Array(m)
-        .fill(0)
-        .map((row) =>
-          new Array(n).fill(0).map(() => {
-            return { value: 0, color: "gray" };
-          })
-        );
-    }
+    return Array(m)
+      .fill(0)
+      .map((row) =>
+        new Array(n).fill(0).map(() => {
+          return { value: 0, color: "gray" };
+        })
+      );
   });
-  const playerCount = players.length;
   const [turn, changeTurn] = useReducer((turn) => {
+    console.log("turn changed");
     let n = 1;
     while (players[(turn + n) % players.length].eliminated) {
-      if (n === playerCount - 1) {
+      if (n === players.length - 1) {
         winManager();
       }
       n++;
     }
-    return (turn + n) % playerCount;
+    let newTurn = (turn + n) % players.length;
+    console.log("newturn:", newTurn, "oldturn:", turn);
+    return newTurn;
   }, 0);
 
   const createPop = () => {
@@ -88,10 +103,9 @@ const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) 
     let winner = players.find((player) => !player.eliminated);
     toast.success(`Player ${winner?.uname} has won!`);
     setCanClick(false);
-    localStorage.removeItem("board");
     setTimeout(() => {
       setHasStarted(false);
-    },5*delay*1000);
+    }, 5 * delay * 1000);
   };
 
   const explosionCheck = (x: number, y: number) => {
@@ -221,13 +235,12 @@ const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) 
         value: board[y][x].value + 1,
         color: players[turn].color,
       };
-      localStorage.setItem("board", JSON.stringify(newBoard));
     });
     setBoard(newBoard);
     createPop();
 
     //Stop Looping on win conition
-    if(players.filter((player) => !player.eliminated).length === 1) {
+    if (players.filter((player) => !player.eliminated).length === 1) {
       winManager();
       return;
     }
@@ -272,14 +285,19 @@ const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) 
       toast.error("Invalid move");
       return;
     }
+    socket.emit("makeMove", { x, y, roomCode });
+    moveHandler(x, y);
+  };
+
+  const moveHandler = (x: number, y: number) => {
     let newBoard = [...board];
     newBoard[y][x] = {
       value: board[y][x].value + 1,
       color: players[turn].color,
     };
+    console.log(newBoard[y][x], players[turn], "turn:", turn);
     setBoard(newBoard);
     createPop();
-    localStorage.setItem("board", JSON.stringify(newBoard));
     //Increment count for player
     players[turn].count++;
     //If no explosions caused, return.
@@ -292,6 +310,17 @@ const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) 
       explosionManager(explosions);
     }
   };
+
+  //Ill never get back the last 3 hours of my life. Stupid dependency array. Might as well put every state in event listener deps lol kekw.
+  useEffect(() => {
+    socket.on("makeMove", ({ x, y }) => {
+      console.log("turn at socket");
+      moveHandler(x, y);
+    });
+    return () => {
+      socket.off("makeMove");
+    };
+  }, [turn, socket, board, players, setBoard, changeTurn, setCanClick]);
 
   return (
     <div
@@ -322,7 +351,7 @@ const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) 
       <div>
         {players.map((player) => {
           return (
-            <div key={player.color}>
+            <div key={player.id}>
               {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
               <button onClick={() => forfeitManager(player.id)}>Foreit</button>
             </div>
@@ -330,6 +359,25 @@ const Board = ({ n = 6, m = 8, delay = 1, players, setHasStarted }: BoardProps) 
         })}
         <button onClick={() => changeTurn()}>Change Turn</button>
       </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          moveHandler(dummyX, dummyY);
+        }}
+      >
+        <input
+          type="text"
+          placeholder="x"
+          onChange={(e) => setDummyX(parseInt(e.target.value))}
+        />
+        <input
+          type="text"
+          placeholder="y"
+          onChange={(e) => setDummyY(parseInt(e.target.value))}
+        />
+        <button type="submit">Submit</button>
+      </form>
     </div>
   );
 };
