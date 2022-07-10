@@ -5,7 +5,9 @@
   "main": "index.js",
   "type":"module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "heroku-postbuild": "npm install && cd frontend && npm install && npm run build"
   },
   "repository": {
     "type": "git",
