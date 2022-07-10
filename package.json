@@ -8,7 +8,7 @@
     "tsc": "./frontend/node_modules/typescript/bin/tsc",
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "heroku-postbuild": "npm install && cd frontend && npm install && npm run heroku-build"
+    "heroku-postbuild": "cd frontend && npm install && npm run heroku-build"
   },
   "repository": {
     "type": "git",
