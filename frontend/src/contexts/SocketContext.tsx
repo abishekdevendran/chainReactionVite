@@ -1,7 +1,6 @@
 import React, { createContext, useEffect } from "react";
 import {io,Socket} from "socket.io-client";
 import toast from "react-hot-toast";
-require('dotenv').config()
 
 const SocketContext = createContext<any>({});
 
@@ -16,9 +15,8 @@ interface ClientToServerEvents {
 }
 
 export const SocketContextProvider = ({ children }) => {
-  const port=process.env.PORT
 //   const socket = useRef();
-  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = io(`${window.location.hostname}+${port?port:"5000"}`,{
+  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = io("http://localhost:5000",{
     reconnection: true,
     closeOnBeforeunload: true,
   });
