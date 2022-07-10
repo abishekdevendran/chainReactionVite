@@ -20,7 +20,8 @@ const socketOptions = {
   reconnection: false,
   closeOnBeforeunload: true,
 };
-  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = import.meta.env.PROD? io(socketOptions):io("http://localhost:5000", socketOptions);
+const socketURL=window.location.hostname+":5000";
+  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = import.meta.env.PROD? io(socketOptions):io(socketURL, socketOptions);
   useEffect(() => {
     socket.on("connect_error", (err) => {
       toast.error(`Server unavailable at the moment. ${err}`);
