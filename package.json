@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "tsc": "./frontend/node_modules/typescript/bin/tsc",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "heroku-postbuild": "npm install && cd frontend && npm install && tsc && npm run heroku-build"
