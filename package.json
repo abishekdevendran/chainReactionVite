@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Chain Reaction Multiplayer Online Game",
   "main": "index.js",
-  "type":"module",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
@@ -21,6 +21,10 @@
   "homepage": "https://github.com/abishekdevendran/chainReactionVite#readme",
   "dependencies": {
     "socket.io": "^4.5.1"
+  },
+  "engines": {
+    "node": "14.18.1",
+    "npm": "6.14.15"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.6",
