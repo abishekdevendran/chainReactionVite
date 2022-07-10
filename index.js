@@ -1,13 +1,23 @@
+import * as express from "express";
+import { createServer } from "http";
 import { Server } from "socket.io";
 
-const io = new Server(5000, {
+const app = express();
+const httpServer = createServer(app);
+const PORT=process.env.PORT || 5000;
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "frontend/dist")));
+}
+
+const io = new Server(PORT, {
   /* options */
   cors: {
     origin: "*",
     transports: ["websocket", "polling"],
   },
 });
-console.log("Server started on port 5000");
+console.log(`Server started on port ${PORT}`);
 
 let rooms = [];
 
@@ -87,3 +97,5 @@ io.sockets.adapter.on("leave-room", (roomCode, id) => {
     }
   });
 });
+
+httpServer.listen(PORT);
