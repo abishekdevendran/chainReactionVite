@@ -16,10 +16,11 @@ interface ClientToServerEvents {
 
 export const SocketContextProvider = ({ children }) => {
 //   const socket = useRef();
-  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = io("http://localhost:5000",{
-    reconnection: true,
-    closeOnBeforeunload: true,
-  });
+const socketOptions = {
+  reconnection: false,
+  closeOnBeforeunload: true,
+};
+  const socket:Socket<ServerToClientEvents, ClientToServerEvents> = import.meta.env.PROD? io(socketOptions):io("http://localhost:5000", socketOptions);
   useEffect(() => {
     socket.on("connect_error", (err) => {
       toast.error(`Server unavailable at the moment. ${err}`);
