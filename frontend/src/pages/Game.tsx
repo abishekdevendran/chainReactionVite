@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useReducer, useState } from "react";
 import toast from "react-hot-toast";
 import { Navigate, useParams } from "react-router-dom";
 import Gamemanager from "../components/Gamemanager";
@@ -69,6 +69,10 @@ const Game = () => {
       roomJoinManager();
     }
   }, [roomCode]);
+
+  useLayoutEffect(() => {
+    document.title = `Room - ${roomCode}`;
+  },[]);
 
   useEffect(() => {
     socket.on("updatePlayers", (players) => {

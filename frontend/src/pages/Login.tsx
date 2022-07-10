@@ -1,9 +1,14 @@
 import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
 
+interface IState{
+  from:string;
+}
+
 const Login = () => {
+  const state=useLocation().state as IState;
   const [data, setData] = useState("");
   const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
@@ -17,7 +22,10 @@ const Login = () => {
       uname: data,
       isLoggedIn: true,
     });
-    navigate("/game");
+    console.log(state);
+    if(state){
+      navigate(-1);
+    }
   };
   return (
     <div className="min-h-screen flex items-center justify-center h-screen">

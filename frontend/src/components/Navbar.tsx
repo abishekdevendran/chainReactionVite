@@ -65,10 +65,9 @@ const Navbar = () => {
           {!user.isLoggedIn ? (
             <ul className="hidden sm:flex">
               <li className="p-2 hover:opacity-80 cursor-pointer">
-                <NavLink to="login">Login</NavLink>
-              </li>
-              <li className="p-2 hover:opacity-80 cursor-pointer animate-pulse">
-                <NavLink to="signup">SignUp</NavLink>
+                <NavLink to="login" state={{ from: true }}>
+                  Login
+                </NavLink>
               </li>
             </ul>
           ) : (
@@ -101,13 +100,12 @@ const Navbar = () => {
                 }`}
               >
                 <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full">
-                  <NavLink to="login" onClick={() => setNav(false)}>
+                  <NavLink
+                    to="login"
+                    onClick={() => setNav(false)}
+                    state={{ from: true }}
+                  >
                     Login
-                  </NavLink>
-                </li>
-                <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-b-2 border-t-2 border-brand-primary text-right w-full">
-                  <NavLink to="signup" onClick={() => setNav(false)}>
-                    SignUp
                   </NavLink>
                 </li>
               </ul>
