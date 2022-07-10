@@ -3,11 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "tsc": "./node_modules/typescript/bin/tsc",
     "start": "vite --open --strictPort --host ",
     "dev": "vite --open",
     "build": "tsc && vite build",
-    "preview": "vite preview --port=8000",
-    "tsc": "./node_modules/typescript/bin/tsc"
+    "preview": "vite preview --port=8000"
   },
   "dependencies": {
     "random-word-slugs": "^0.1.6",
