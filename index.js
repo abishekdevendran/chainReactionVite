@@ -1,16 +1,18 @@
-import * as express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
+const express = require("express");
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const path = require("path");
 
 const app = express();
 const httpServer = createServer(app);
-const PORT=process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
-if (process.env.NODE_ENV === "production") {
+if (true) {
+  console.log("production");
   app.use(express.static(path.join(__dirname, "frontend/dist")));
 }
 
-const io = new Server(PORT, {
+const io = new Server(httpServer, {
   /* options */
   cors: {
     origin: "*",
