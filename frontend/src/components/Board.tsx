@@ -1,8 +1,7 @@
-import React, {
+import {
   useContext,
   useEffect,
   useReducer,
-  useRef,
   useState,
 } from "react";
 import Square from "./Square";
@@ -26,6 +25,7 @@ interface BoardProps {
   m: number;
   delay: number;
   players: Player[];
+  setPlayers: (players: Player[]) => void;
   setHasStarted: (hasStarted: boolean) => void;
 }
 
@@ -39,12 +39,11 @@ const Board = ({
   m = 8,
   delay = 1,
   players,
+  setPlayers,
   setHasStarted,
 }: BoardProps) => {
   const { roomCode } = useParams();
   const { socket } = useContext(SocketContext);
-  const [dummyX, setDummyX] = useState(0);
-  const [dummyY, setDummyY] = useState(0);
   const { user } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
   const [board, setBoard] = useState(() => {
@@ -75,9 +74,10 @@ const Board = ({
   };
 
   const forfeitManager = (id: number) => {
-    console.log(`Player ${id} has forfeited`);
-    toast(`Player ${id} has forfeited`);
+    let forfeitPlayer= players.find((player) => player.id === id);
     let foundIndex = players.findIndex((player) => player.id === id);
+    console.log(`Player ${forfeitPlayer?.uname} has forfeited`);
+    toast(`Player ${forfeitPlayer?.uname} has forfeited`);
     let newBoard = [...board];
     newBoard.forEach((row) => {
       row.forEach((square) => {
@@ -91,6 +91,7 @@ const Board = ({
       changeTurn();
     }
     let remainderCount = players.filter((player) => !player.eliminated).length;
+    setPlayers([...players]);
     if (remainderCount === 1) {
       winManager();
     }
@@ -234,6 +235,7 @@ const Board = ({
         color: players[turn].color,
       };
     });
+    setPlayers([...players]);
     setBoard(newBoard);
     createPop();
 
@@ -270,6 +272,7 @@ const Board = ({
 
   const clickHandler = (e, x: number, y: number) => {
     e.stopPropagation();
+    console.log(`${players[turn].uname} clicked ${x}, ${y}`);
     if (!canClick) {
       return;
     }
@@ -283,11 +286,12 @@ const Board = ({
       toast.error("Invalid move");
       return;
     }
-    socket.emit("makeMove", { x, y, roomCode });
     moveHandler(x, y);
+    socket.emit("makeMove", { x, y, roomCode });
   };
 
   const moveHandler = (x: number, y: number) => {
+    console.log(`${players[turn].uname} moved ${x}, ${y}`,turn);
     let newBoard = [...board];
     newBoard[y][x] = {
       value: board[y][x].value + 1,
@@ -309,19 +313,24 @@ const Board = ({
   };
 
   //Ill never get back the last 3 hours of my life. Stupid dependency array. Might as well put every state in event listener deps lol kekw.
+  //Update:friggin piece of shit is causing more problems idk the solution to.
   useEffect(() => {
     socket.on("makeMove", ({ x, y }) => {
       moveHandler(x, y);
     });
+    socket.on("playerForfeit", (id) => {
+      forfeitManager(id);
+    })
     return () => {
       socket.off("makeMove");
+      socket.off("playerForfeit");
     };
-  }, [turn, socket, board, players, setBoard, changeTurn, setCanClick]);
+  }, [turn]);
 
   return (
     <div
       className="font-poppins"
-      style={{ backgroundColor: players[turn].color }}
+      style={{ backgroundColor: players[turn]?.color }}
     >
       Game Board {players[turn].uname}{" "}
       {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}

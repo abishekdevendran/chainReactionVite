@@ -75,6 +75,7 @@ const Game = () => {
   },[]);
 
   useEffect(() => {
+    console.log("game component effect");
     socket.on("updatePlayers", (players) => {
       setPlayers(players);
     });
@@ -85,12 +86,12 @@ const Game = () => {
       socket.off("updatePlayers");
       socket.off("startGame");
     };
-  }, []);
+  }, [players]);
 
   return (
     <div className="min-h-screen bg-bg-primary flex items-center justify-center">
       {hasStarted ? (
-        <Gamemanager players={players} setHasStarted={setHasStarted} />
+        <Gamemanager players={players} setPlayers={setPlayers} setHasStarted={setHasStarted} />
       ) : (
         <Lobby players={players} isReady={isReady} setIsReady={setIsReady} />
       )}

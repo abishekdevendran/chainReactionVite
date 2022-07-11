@@ -15,11 +15,13 @@ const Room = () => {
     }
     e.preventDefault();
     navigate(`/game/${data}`);
+    navigate(0);
   };
   const roomCreateHandler = (e) => {
     e.preventDefault();
     let roomCode = generateSlug(1);
     navigate(`/game/${roomCode}`);
+    navigate(0);
   };
   useEffect(() => {
     console.log("Roooms cleared");

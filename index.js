@@ -43,7 +43,7 @@ io.on("connection", (socket) => {
     socket.join(roomCode);
     console.log("joined room: " + roomCode);
     let room = rooms.find((r) => r.roomCode === roomCode);
-    let id=room ? room.users.length + 1 : 1
+    let id = room ? room.users.length + 1 : 1;
     let userObject = {
       id: id,
       uname: user.uname,
@@ -88,9 +88,9 @@ io.on("connection", (socket) => {
     socket.leaveAll();
   });
 
-  socket.on("makeMove",({x,y,roomCode})=>{
-    socket.to(roomCode).emit("makeMove",{x,y})
-  })
+  socket.on("makeMove", ({ x, y, roomCode }) => {
+    socket.to(roomCode).emit("makeMove", { x, y });
+  });
 });
 
 io.sockets.adapter.on("delete-room", (roomCode) => {
@@ -109,11 +109,14 @@ io.sockets.adapter.on("leave-room", (roomCode, id) => {
     if (room.roomCode === roomCode) {
       room.users = room.users.filter((user) => {
         console.log(user.socketId + " left room: " + roomCode);
+        if (user.socketId === id) {
+          io.to(roomCode).emit("playerForfeit", user.id);
+        }
         return user.socketId !== id;
       });
       room.users = room.users.map((user, index) => {
         user.id = index + 1;
-        user.color=colors[index+1];
+        user.color = colors[index + 1];
         return user;
       });
       io.to(roomCode).emit("updatePlayers", room.users);
