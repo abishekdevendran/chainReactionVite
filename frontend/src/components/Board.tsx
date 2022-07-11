@@ -1,11 +1,27 @@
-import React, { useState } from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 import Square from "./Square";
+import popAudio from "../assets/pop.mp3";
+import toast from "react-hot-toast";
+import UserContext from "../contexts/UserContext";
+import SocketContext from "../contexts/SocketContext";
+import { useParams } from "react-router-dom";
+
+interface Player {
+  id: number;
+  uname: string;
+  color: string;
+  eliminated: boolean;
+  count: number;
+  isReady: boolean;
+}
 
 interface BoardProps {
   n: number;
   m: number;
-  color: string;
   delay: number;
+  players: Player[];
+  setPlayers: (players: Player[]) => void;
+  setHasStarted: (hasStarted: boolean) => void;
 }
 
 interface BoardValue {
@@ -13,17 +29,78 @@ interface BoardValue {
   color: string;
 }
 
-const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
+const Board = ({
+  n = 6,
+  m = 8,
+  delay = 1,
+  players,
+  setPlayers,
+  setHasStarted,
+}: BoardProps) => {
+  const { roomCode } = useParams();
+  const { socket } = useContext(SocketContext);
+  const { user } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
-  const [board, setBoard] = useState(
-    Array(m)
+  const [board, setBoard] = useState(() => {
+    return Array(m)
       .fill(0)
       .map((row) =>
         new Array(n).fill(0).map(() => {
           return { value: 0, color: "gray" };
         })
-      )
-  );
+      );
+  });
+  const [turn, changeTurn] = useReducer((turn) => {
+    let n = 1;
+    while (players[(turn + n) % players.length].eliminated) {
+      if (n === players.length - 1) {
+        winManager();
+      }
+      n++;
+    }
+    let newTurn = (turn + n) % players.length;
+    return newTurn;
+  }, 0);
+
+  const createPop = () => {
+    let audioinstance = new Audio(popAudio);
+    audioinstance.volume = 0.02;
+    audioinstance.play();
+  };
+
+  const forfeitManager = (id: number) => {
+    let forfeitPlayer = players.find((player) => player.id === id);
+    let foundIndex = players.findIndex((player) => player.id === id);
+    console.log(`Player ${forfeitPlayer?.uname} has forfeited`);
+    toast(`Player ${forfeitPlayer?.uname} has forfeited`);
+    let newBoard = [...board];
+    newBoard.forEach((row) => {
+      row.forEach((square) => {
+        if (square.color === players[foundIndex].color) {
+          square.color = "gray";
+        }
+      });
+    });
+    players[foundIndex].eliminated = true;
+    if (turn === foundIndex) {
+      changeTurn();
+    }
+    let remainderCount = players.filter((player) => !player.eliminated).length;
+    setPlayers([...players]);
+    if (remainderCount === 1) {
+      winManager();
+    }
+    setBoard(newBoard);
+  };
+
+  const winManager = () => {
+    let winner = players.find((player) => !player.eliminated);
+    toast.success(`Player ${winner?.uname} has won!`);
+    setCanClick(false);
+    setTimeout(() => {
+      setHasStarted(false);
+    }, 5 * delay * 1000);
+  };
 
   const explosionCheck = (x: number, y: number) => {
     //corner check
@@ -61,55 +138,108 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
         if (y === 0) {
           newExplosions.push({ x: x + 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else if (y === m - 1) {
           newExplosions.push({ x: x + 1, y: y });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else {
           newExplosions.push({ x: x + 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 3,
+            color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+          };
         }
       } else if (x === n - 1) {
         if (y === 0) {
           newExplosions.push({ x: x - 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else if (y === m - 1) {
           newExplosions.push({ x: x - 1, y: y });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 2, color: newBoard[y][x].value===2?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 2,
+            color: newBoard[y][x].value === 2 ? "gray" : players[turn].color,
+          };
         } else {
           newExplosions.push({ x: x - 1, y: y });
           newExplosions.push({ x: x, y: y + 1 });
           newExplosions.push({ x: x, y: y - 1 });
-          newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+          newBoard[y][x] = {
+            value: newBoard[y][x].value - 3,
+            color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+          };
         }
       } else if (y === 0) {
         newExplosions.push({ x: x + 1, y: y });
         newExplosions.push({ x: x - 1, y: y });
         newExplosions.push({ x: x, y: y + 1 });
-        newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+        newBoard[y][x] = {
+          value: newBoard[y][x].value - 3,
+          color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+        };
       } else if (y === m - 1) {
         newExplosions.push({ x: x + 1, y: y });
         newExplosions.push({ x: x - 1, y: y });
         newExplosions.push({ x: x, y: y - 1 });
-        newBoard[y][x] = { value: newBoard[y][x].value - 3, color: newBoard[y][x].value===3?"gray":color };
+        newBoard[y][x] = {
+          value: newBoard[y][x].value - 3,
+          color: newBoard[y][x].value === 3 ? "gray" : players[turn].color,
+        };
       } else {
         newExplosions.push({ x: x + 1, y: y });
         newExplosions.push({ x: x - 1, y: y });
         newExplosions.push({ x: x, y: y + 1 });
         newExplosions.push({ x: x, y: y - 1 });
-        newBoard[y][x] = { value: newBoard[y][x].value - 4, color: newBoard[y][x].value===4?"gray":color };
+        newBoard[y][x] = {
+          value: newBoard[y][x].value - 4,
+          color: newBoard[y][x].value === 4 ? "gray" : players[turn].color,
+        };
       }
     });
-    //update explosions to board
+    //update explosions and counts to board
     newExplosions.forEach(({ x, y }) => {
-      newBoard[y][x] = { value: board[y][x].value + 1, color: color };
+      if (newBoard[y][x].value !== 0) {
+        players[turn].count += newBoard[y][x].value;
+        let foundPlayer = players.find(
+          (player) => player.color === newBoard[y][x].color
+        );
+        if (foundPlayer) {
+          foundPlayer!.count -= newBoard[y][x].value;
+          if (foundPlayer!.count <= 0) {
+            foundPlayer!.eliminated = true;
+            console.log(`${foundPlayer!.uname} has been eliminated`);
+            toast.success(`${foundPlayer!.uname} has been eliminated`);
+          }
+        }
+      }
+      newBoard[y][x] = {
+        value: board[y][x].value + 1,
+        color: players[turn].color,
+      };
     });
+    setPlayers([...players]);
     setBoard(newBoard);
+    createPop();
+
+    //Stop Looping on win conition
+    if (players.filter((player) => !player.eliminated).length === 1) {
+      winManager();
+      return;
+    }
+
     //eliminate duplicates
     newExplosions = newExplosions.filter(
       (value, index, self) =>
@@ -122,8 +252,9 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
     newExplosions = newExplosions.filter((explosion) => {
       return explosionCheck(explosion.x, explosion.y);
     });
-
+    //exit if no more explosions
     if (newExplosions.length === 0) {
+      changeTurn();
       setCanClick(true);
       return;
     } else {
@@ -136,20 +267,38 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
 
   const clickHandler = (e, x: number, y: number) => {
     e.stopPropagation();
+    console.log(`${players[turn].uname} clicked ${x}, ${y}`);
     if (!canClick) {
       return;
     }
-    // //If not valid move, return.
-    if (board[y][x].color !== color && board[y][x].color !== "gray") {
-      console.log("Invalid move");
+    if (players[turn].uname !== user.uname) {
+      toast.error("Wait your turn");
       return;
     }
+    // //If not valid move, return.
+    if (board[y][x].color !== players[turn].color && board[y][x].value !== 0) {
+      console.log("Invalid move");
+      toast.error("Invalid move");
+      return;
+    }
+    moveHandler(x, y);
+    socket.emit("makeMove", { x, y, roomCode });
+  };
+
+  const moveHandler = (x: number, y: number) => {
+    console.log(`${players[turn].uname} moved ${x}, ${y}`, turn);
     let newBoard = [...board];
-    newBoard[y][x] = { value: board[y][x].value + 1, color: color };
+    newBoard[y][x] = {
+      value: board[y][x].value + 1,
+      color: players[turn].color,
+    };
     setBoard(newBoard);
-    // //If no explosions caused, return.
+    createPop();
+    //Increment count for player
+    players[turn].count++;
+    //If no explosions caused, return.
     if (explosionCheck(x, y) === false) {
-      console.log("No explosions");
+      changeTurn();
       return;
     } else {
       setCanClick(false);
@@ -158,9 +307,28 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
     }
   };
 
+  //Ill never get back the last 3 hours of my life. Stupid dependency array. Might as well put every state in event listener deps lol kekw.
+  //Update:friggin piece of shit is causing more problems idk the solution to.
+  useEffect(() => {
+    socket.on("makeMove", ({ x, y }) => {
+      moveHandler(x, y);
+    });
+    socket.on("playerForfeit", (id) => {
+      forfeitManager(id);
+    });
+    return () => {
+      socket.off("makeMove");
+      socket.off("playerForfeit");
+    };
+  }, [turn]);
+
   return (
-    <div className="font-poppins">
-      Game Board
+    <div
+      className="font-poppins"
+      style={{ backgroundColor: players[turn]?.color }}
+    >
+      Game Board {players[turn].uname}{" "}
+      {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
       <div className="board flex flex-col items-center justify-center">
         {board.map((row, i) => {
           return (
@@ -176,6 +344,23 @@ const Board = ({ n = 6, m = 8, color = "red", delay = 1 }: BoardProps) => {
                   />
                 );
               })}
+            </div>
+          );
+        })}
+      </div>
+      <div>
+        {players.map((player) => {
+          return (
+            <div key={player.id}>
+              {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
+              {player.uname===user.uname && <button
+                onClick={() => {
+                  socket.emit("playerForfeit", roomCode, player.id);
+                  forfeitManager(player.id);
+                }}
+              >
+                Foreit
+              </button>}
             </div>
           );
         })}
