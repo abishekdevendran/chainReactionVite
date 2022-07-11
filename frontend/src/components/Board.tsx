@@ -1,9 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 import Square from "./Square";
 import popAudio from "../assets/pop.mp3";
 import toast from "react-hot-toast";
@@ -74,7 +69,7 @@ const Board = ({
   };
 
   const forfeitManager = (id: number) => {
-    let forfeitPlayer= players.find((player) => player.id === id);
+    let forfeitPlayer = players.find((player) => player.id === id);
     let foundIndex = players.findIndex((player) => player.id === id);
     console.log(`Player ${forfeitPlayer?.uname} has forfeited`);
     toast(`Player ${forfeitPlayer?.uname} has forfeited`);
@@ -291,7 +286,7 @@ const Board = ({
   };
 
   const moveHandler = (x: number, y: number) => {
-    console.log(`${players[turn].uname} moved ${x}, ${y}`,turn);
+    console.log(`${players[turn].uname} moved ${x}, ${y}`, turn);
     let newBoard = [...board];
     newBoard[y][x] = {
       value: board[y][x].value + 1,
@@ -320,7 +315,7 @@ const Board = ({
     });
     socket.on("playerForfeit", (id) => {
       forfeitManager(id);
-    })
+    });
     return () => {
       socket.off("makeMove");
       socket.off("playerForfeit");
@@ -358,7 +353,14 @@ const Board = ({
           return (
             <div key={player.id}>
               {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
-              <button onClick={() => forfeitManager(player.id)}>Foreit</button>
+              {player.uname===user.uname && <button
+                onClick={() => {
+                  socket.emit("playerForfeit", roomCode, player.id);
+                  forfeitManager(player.id);
+                }}
+              >
+                Foreit
+              </button>}
             </div>
           );
         })}

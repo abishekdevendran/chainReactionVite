@@ -47,6 +47,7 @@ const Game = () => {
   const { user } = useContext(UserContext);
   const { roomCode } = useParams();
   const [players, setPlayers] = useState<Player[]>([]);
+  const [boardPlayers, setBoardPlayers] = useState<Player[]>([]);
   const [hasStarted, setHasStarted] = useState(false);
   const [isReady, setIsReady] = useReducer((state) => {
     players.find((player) => player.uname === user.uname)!.isReady = !state;
@@ -88,10 +89,17 @@ const Game = () => {
     };
   }, [players]);
 
+  useEffect(() => {
+    if(!hasStarted) {
+      setBoardPlayers(players);
+    }
+  }, [players,hasStarted]);
+
+
   return (
     <div className="min-h-screen bg-bg-primary flex items-center justify-center">
       {hasStarted ? (
-        <Gamemanager players={players} setPlayers={setPlayers} setHasStarted={setHasStarted} />
+        <Gamemanager players={boardPlayers} setPlayers={setBoardPlayers} setHasStarted={setHasStarted} />
       ) : (
         <Lobby players={players} isReady={isReady} setIsReady={setIsReady} />
       )}

@@ -91,6 +91,11 @@ io.on("connection", (socket) => {
   socket.on("makeMove", ({ x, y, roomCode }) => {
     socket.to(roomCode).emit("makeMove", { x, y });
   });
+
+  socket.on("playerForfeit", (roomCode,id) => {
+    console.log("forfeit");
+    socket.to(roomCode).emit("playerForfeit",id);
+  })
 });
 
 io.sockets.adapter.on("delete-room", (roomCode) => {
@@ -110,6 +115,7 @@ io.sockets.adapter.on("leave-room", (roomCode, id) => {
       room.users = room.users.filter((user) => {
         console.log(user.socketId + " left room: " + roomCode);
         if (user.socketId === id) {
+          console.log("forfeited: " + user.uname);
           io.to(roomCode).emit("playerForfeit", user.id);
         }
         return user.socketId !== id;
