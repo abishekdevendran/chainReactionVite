@@ -325,7 +325,7 @@ const Board = ({
 
   return (
     <motion.div
-      className="font-poppins absolute"
+      className="font-poppins absolute text-center rounded-md p-2"
       style={{ backgroundColor: players[turn]?.color }}
       initial={{ x: "-100vw", y: 0 }}
       animate={{ x: 0, y: 0 }}
@@ -335,7 +335,7 @@ const Board = ({
       Game Board {players[turn].uname}{" "}
       {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
       <div className="board flex flex-col items-center justify-center">
-        {board.map((row, i) => {
+        {<div className="hello bg-white">{board.map((row, i) => {
           return (
             <div key={i} className="board-row flex">
               {row.map((val: BoardValue, j: number) => {
@@ -351,22 +351,27 @@ const Board = ({
               })}
             </div>
           );
-        })}
+        })}</div>}
       </div>
       <div>
-        {players.map((player) => {
+        {players.map((player,i) => {
           return (
-            <div key={player.id}>
+            <div
+            className="py-1"
+              key={player.id}
+              style={{ backgroundColor: players[i]?.color }}
+            >
               {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
               {player.uname === user.uname && (
                 <motion.button
+                  className="bg-brand-primary text-brand-tertiary font-bold px-4 rounded mx-2"
                   onClick={() => {
                     socket.emit("playerForfeit", roomCode, player.id);
                     forfeitManager(player.id);
                   }}
                   whileHover={{ scale: 1.1 }}
                 >
-                  Foreit
+                  Forfeit
                 </motion.button>
               )}
             </div>
