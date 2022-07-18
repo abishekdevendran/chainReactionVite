@@ -11,6 +11,7 @@ import { FiSun, FiMoon } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import DarkModeContext from "../contexts/DarkModeContext";
 import UserContext from "../contexts/UserContext";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
@@ -144,14 +145,27 @@ const Navbar = () => {
               className="ml-3 cursor-pointer sm:mt-1"
             />
           ) : (
-            <FiSun
-              size={30}
-              onClick={() => {
-                setDarkMode(!darkMode);
-                toast("Dark Mode is now OFF");
+            <motion.div
+              className="m-3 cursor-pointer sm:mt-3"
+              initial={{
+                rotate: 0,
               }}
-              className="ml-3 cursor-pointer sm:mt-1 animate-spin-slow"
-            />
+              whileHover={{
+                rotate: 90,
+                scale: 1.1,
+              }}
+              animate={{
+                rotate: 0,
+              }}
+            >
+              <FiSun
+                size={30}
+                onClick={() => {
+                  setDarkMode(!darkMode);
+                  toast("Dark Mode is now OFF");
+                }}
+              />
+            </motion.div>
           )}
         </div>
       </div>

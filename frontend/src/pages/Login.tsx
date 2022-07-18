@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useLocation, useNavigate } from "react-router-dom";
 import UserContext from "../contexts/UserContext";
+import { motion } from "framer-motion";
 
 interface IState{
   from:string;
@@ -28,7 +29,12 @@ const Login = () => {
     }
   };
   return (
-    <div className="min-h-screen flex items-center justify-center h-screen">
+    <motion.div
+      className="min-h-screen flex items-center justify-center h-screen"
+      initial={{ x: "-100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+    >
       <form onSubmit={submitHandler}>
         <label>Username:</label>
         <input
@@ -45,7 +51,7 @@ const Login = () => {
           Login
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 };
 

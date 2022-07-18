@@ -1,10 +1,17 @@
-import React, { useContext, useEffect, useLayoutEffect, useReducer, useState } from "react";
+import React, {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useState,
+} from "react";
 import toast from "react-hot-toast";
 import { Navigate, useParams } from "react-router-dom";
 import Gamemanager from "../components/Gamemanager";
 import Lobby from "../components/Lobby";
 import SocketContext from "../contexts/SocketContext";
 import UserContext from "../contexts/UserContext";
+import { motion } from "framer-motion";
 
 // const players = [
 //   {
@@ -51,12 +58,12 @@ const Game = () => {
   const [hasStarted, setHasStarted] = useState(false);
   const [isReady, setIsReady] = useReducer((state) => {
     players.find((player) => player.uname === user.uname)!.isReady = !state;
-    socket.emit("updateReady", roomCode ,user, (players) => {
+    socket.emit("updateReady", roomCode, user, (players) => {
       setPlayers(players);
     });
     return !state;
   }, false);
-  
+
   const roomJoinManager = () => {
     console.log(user);
     socket.emit("roomJoin", roomCode, user, (players) => {
@@ -73,7 +80,7 @@ const Game = () => {
 
   useLayoutEffect(() => {
     document.title = `Room - ${roomCode}`;
-  },[]);
+  }, []);
 
   useEffect(() => {
     console.log("game component effect");
@@ -90,20 +97,28 @@ const Game = () => {
   }, [players]);
 
   useEffect(() => {
-    if(!hasStarted) {
+    if (!hasStarted) {
       setBoardPlayers(players);
     }
-  }, [players,hasStarted]);
-
+  }, [players, hasStarted]);
 
   return (
-    <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+    <motion.div
+      className="min-h-screen bg-bg-primary flex items-center justify-center"
+      initial={{ x: "-100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+    >
       {hasStarted ? (
-        <Gamemanager players={boardPlayers} setPlayers={setBoardPlayers} setHasStarted={setHasStarted} />
+        <Gamemanager
+          players={boardPlayers}
+          setPlayers={setBoardPlayers}
+          setHasStarted={setHasStarted}
+        />
       ) : (
         <Lobby players={players} isReady={isReady} setIsReady={setIsReady} />
       )}
-    </div>
+    </motion.div>
   );
 };
 

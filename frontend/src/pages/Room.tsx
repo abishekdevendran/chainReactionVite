@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import SocketContext from "../contexts/SocketContext";
+import { motion } from "framer-motion";
 
 const Room = () => {
   const { socket } = useContext(SocketContext);
@@ -15,20 +16,23 @@ const Room = () => {
     }
     e.preventDefault();
     navigate(`/game/${data}`);
-    navigate(0);
   };
   const roomCreateHandler = (e) => {
     e.preventDefault();
     let roomCode = generateSlug(1);
     navigate(`/game/${roomCode}`);
-    navigate(0);
   };
   useEffect(() => {
     console.log("Roooms cleared");
     socket.emit("clearRooms");
   },[])
   return (
-    <div className="min-h-screen flex items-center justify-center h-screen bg-bg-primary">
+    <motion.div
+      className="min-h-screen flex items-center justify-center h-screen bg-bg-primary"
+      initial={{ x: -window.innerWidth }}
+      animate={{ x: 0 }}
+      exit={{ x: window.innerWidth }}
+    >
       <form onSubmit={roomJoinHandler}>
         <label>RoomCode:</label>
         <input
@@ -51,7 +55,7 @@ const Room = () => {
           Create Room
         </button>
       </form>
-    </div>
+    </motion.div>
   );
 };
 
