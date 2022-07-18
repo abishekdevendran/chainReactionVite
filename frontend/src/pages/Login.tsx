@@ -30,12 +30,16 @@ const Login = () => {
   };
   return (
     <motion.div
-      className="min-h-screen flex items-center justify-center h-screen"
-      initial={{ x: "-100vw" }}
-      animate={{ x: 0 }}
-      exit={{ scale: 0.5, opacity: 0 }}
+      className="absolute min-w-full min-h-screen flex items-center justify-center h-screen font-poppins bg-brand-grey-secondary"
+      initial={{ x: "-100vw", y:0 }}
+      animate={{ x: 0 , y:0}}
+      exit={{ x: "100vw", y:0 }}
+      transition={{ duration: 0.5 }}
     >
-      <form onSubmit={submitHandler}>
+      <form
+        onSubmit={submitHandler}
+        className="max-w-sm rounded overflow-hidden shadow-lg text-center w-5/6 bg-bg-secondary p-5 py-9"
+      >
         <label>Username:</label>
         <input
           required
@@ -43,13 +47,15 @@ const Login = () => {
           name="username"
           placeholder="Username"
           onChange={(e) => setData(e.target.value)}
+          className="bg-bg-secondary border-b-2 border-brand-tertiary focus:outline-none focus:border-brand-primary focus:border-brand-primary-lg py-2 px-4 rounded text-brand-primary-lg"
         />
-        <button
+        <motion.button
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           type="submit"
+          whileHover={{ scale: 1.1 }}
         >
           Login
-        </button>
+        </motion.button>
       </form>
     </motion.div>
   );

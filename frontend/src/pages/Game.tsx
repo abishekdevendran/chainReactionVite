@@ -11,7 +11,7 @@ import Gamemanager from "../components/Gamemanager";
 import Lobby from "../components/Lobby";
 import SocketContext from "../contexts/SocketContext";
 import UserContext from "../contexts/UserContext";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 // const players = [
 //   {
@@ -103,22 +103,25 @@ const Game = () => {
   }, [players, hasStarted]);
 
   return (
-    <motion.div
-      className="min-h-screen bg-bg-primary flex items-center justify-center"
-      initial={{ x: "-100%" }}
-      animate={{ x: 0 }}
-      exit={{ x: "100%" }}
-    >
-      {hasStarted ? (
-        <Gamemanager
-          players={boardPlayers}
-          setPlayers={setBoardPlayers}
-          setHasStarted={setHasStarted}
-        />
-      ) : (
-        <Lobby players={players} isReady={isReady} setIsReady={setIsReady} />
-      )}
-    </motion.div>
+    <AnimatePresence initial={false}>
+      <motion.div
+        className="absolute min-w-full min-h-screen bg-bg-primary flex items-center justify-center"
+        initial={{ x: "-100%" }}
+        animate={{ x: 0 }}
+        exit={{ x: "100%" }}
+        transition={{ duration: 0.5 }}
+      >
+        {hasStarted ? (
+          <Gamemanager
+            players={boardPlayers}
+            setPlayers={setBoardPlayers}
+            setHasStarted={setHasStarted}
+          />
+        ) : (
+          <Lobby players={players} isReady={isReady} setIsReady={setIsReady} />
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

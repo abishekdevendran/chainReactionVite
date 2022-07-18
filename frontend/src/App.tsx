@@ -10,10 +10,11 @@ function App() {
   } else {
     return (
       <motion.div
-        className="flex justify-center w-screen h-screen text-center select-none items-center font-poppins"
-        initial={{ x: "-100vw" }}
-        animate={{ x: 0 }}
-        exit={{ scale: 0.5, opacity: 0 }}
+        className="absolute flex justify-center w-screen h-screen text-center select-none items-center font-poppins bg-bg-secondary"
+        initial={{ x: "-100vw", y: 0 }}
+        animate={{ x: 0, y: 0 }}
+        exit={{ x: "100vw", y: 0 }}
+        transition={{ duration: 0.5 }}
       >
         <div>
           <h1 className="text-4xl font-semibold">Chain Reaction</h1>

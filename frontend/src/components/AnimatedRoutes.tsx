@@ -1,5 +1,4 @@
 import { AnimatePresence } from "framer-motion";
-import React from "react";
 import { Route, Routes, useLocation } from "react-router-dom";
 import App from "../App";
 import Game from "../pages/Game";
@@ -12,7 +11,6 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence initial={false} >
-      <Navbar />
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<App />}></Route>
         <Route path="/login" element={<Login />}></Route>

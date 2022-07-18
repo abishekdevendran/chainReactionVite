@@ -120,7 +120,7 @@ const Navbar = () => {
                 }`}
               >
                 <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full font-semibold">
-                  {`Welcome, ${user.name}`}
+                  {`Welcome, ${user.uname}`}
                 </li>
                 <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full">
                   Profile
@@ -138,14 +138,15 @@ const Navbar = () => {
             )}
           </div>
           {darkMode ? (
-            <FiMoon
-              size={30}
-              onClick={() => {
-                setDarkMode(!darkMode);
-                toast("Dark Mode is now ON");
-              }}
-              className="ml-3 cursor-pointer sm:mt-1"
-            />
+            <div className="m-3 cursor-pointer sm:mt-3">
+              <FiMoon
+                size={30}
+                onClick={() => {
+                  setDarkMode(!darkMode);
+                  toast("Dark Mode is now ON");
+                }}
+              />
+            </div>
           ) : (
             <motion.div
               className="m-3 cursor-pointer sm:mt-3"

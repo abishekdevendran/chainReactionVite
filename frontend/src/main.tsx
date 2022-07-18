@@ -6,12 +6,14 @@ import { UserContextProvider } from "./contexts/UserContext";
 import { Toaster } from "react-hot-toast";
 import { SocketContextProvider } from "./contexts/SocketContext";
 import AnimatedRoutes from "./components/AnimatedRoutes";
+import Navbar from "./components/Navbar";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <DarkModeContextProvider>
     <UserContextProvider>
       <SocketContextProvider>
           <BrowserRouter>
+          <Navbar/>
             <AnimatedRoutes/>
           </BrowserRouter>
         <Toaster />

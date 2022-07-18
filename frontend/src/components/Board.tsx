@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import UserContext from "../contexts/UserContext";
 import SocketContext from "../contexts/SocketContext";
 import { useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 
 interface Player {
   id: number;
@@ -323,9 +324,13 @@ const Board = ({
   }, [turn]);
 
   return (
-    <div
-      className="font-poppins"
+    <motion.div
+      className="font-poppins absolute"
       style={{ backgroundColor: players[turn]?.color }}
+      initial={{ x: "-100vw", y: 0 }}
+      animate={{ x: 0, y: 0 }}
+      exit={{ x: "100vw", y: 0 }}
+      transition={{ duration: 0.5 }}
     >
       Game Board {players[turn].uname}{" "}
       {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
@@ -353,19 +358,22 @@ const Board = ({
           return (
             <div key={player.id}>
               {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
-              {player.uname===user.uname && <button
-                onClick={() => {
-                  socket.emit("playerForfeit", roomCode, player.id);
-                  forfeitManager(player.id);
-                }}
-              >
-                Foreit
-              </button>}
+              {player.uname === user.uname && (
+                <motion.button
+                  onClick={() => {
+                    socket.emit("playerForfeit", roomCode, player.id);
+                    forfeitManager(player.id);
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                >
+                  Foreit
+                </motion.button>
+              )}
             </div>
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
