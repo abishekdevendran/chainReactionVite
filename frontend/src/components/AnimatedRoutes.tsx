@@ -5,12 +5,14 @@ import App from "../App";
 import Game from "../pages/Game";
 import Login from "../pages/Login";
 import Room from "../pages/Room";
+import Navbar from "./Navbar";
 import Protectedroute from "./Protectedroute";
 
 const AnimatedRoutes = () => {
   const location = useLocation();
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false} >
+      <Navbar />
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<App />}></Route>
         <Route path="/login" element={<Login />}></Route>
@@ -27,7 +29,7 @@ const AnimatedRoutes = () => {
             path=":roomCode"
             element={
               <Protectedroute>
-                <Game />
+                <Game key={location.pathname}/>
               </Protectedroute>
             }
           />

@@ -89,6 +89,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("makeMove", ({ x, y, roomCode }) => {
+    console.log("move made", x, y, roomCode,socket.id);
     socket.to(roomCode).emit("makeMove", { x, y });
   });
 

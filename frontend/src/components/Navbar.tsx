@@ -48,7 +48,7 @@ const Navbar = () => {
     >
       <div className="container flex justify-between items-center font-poppins text-primary py-4 px-4 max-w-screen-lg transition-all ease-in-ease-out duration-1000 text-ellipsis">
         <h1
-          className={`pb-2 text-4xl sm:text-5xl font-semibold ${
+          className={`pt-1 pb-2 text-4xl sm:text-5xl font-semibold ${
             user.isLoggedIn ? "cursor-default" : "cursor-pointer"
           } whitespace-nowrap  ${
             darkMode
@@ -64,7 +64,7 @@ const Navbar = () => {
         </h1>
         <div className="right flex">
           {!user.isLoggedIn ? (
-            <ul className="hidden sm:flex">
+            <ul className="hidden sm:flex sm:items-center sm:text-right">
               <li className="p-2 hover:opacity-80 cursor-pointer">
                 <NavLink to="login" state={{ from: true }}>
                   Login
@@ -87,11 +87,13 @@ const Navbar = () => {
           )}
           <div className=" cursor-pointer sm:hidden text-primary">
             {!nav ? (
-              <div className="animate-pulse">
+              <div className="animate-pulse pt-3">
                 <AiOutlineMenu size={30} onClick={() => setNav(!nav)} />
               </div>
             ) : (
-              <AiOutlineClose size={30} onClick={() => setNav(!nav)} />
+              <div className="animate-pulse pt-3">
+                <AiOutlineClose size={30} onClick={() => setNav(!nav)} />
+              </div>
             )}
             {!user.isLoggedIn ? (
               <ul

@@ -16,11 +16,13 @@ const Room = () => {
     }
     e.preventDefault();
     navigate(`/game/${data}`);
+    navigate(0);
   };
   const roomCreateHandler = (e) => {
     e.preventDefault();
     let roomCode = generateSlug(1);
     navigate(`/game/${roomCode}`);
+    navigate(0);
   };
   useEffect(() => {
     console.log("Roooms cleared");
@@ -29,9 +31,9 @@ const Room = () => {
   return (
     <motion.div
       className="min-h-screen flex items-center justify-center h-screen bg-bg-primary"
-      initial={{ x: -window.innerWidth }}
+      initial={{ x: "-100vw" }}
       animate={{ x: 0 }}
-      exit={{ x: window.innerWidth }}
+      exit={{ scale: 0.5, opacity: 0 }}
     >
       <form onSubmit={roomJoinHandler}>
         <label>RoomCode:</label>

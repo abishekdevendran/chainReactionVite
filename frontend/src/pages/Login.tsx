@@ -31,9 +31,9 @@ const Login = () => {
   return (
     <motion.div
       className="min-h-screen flex items-center justify-center h-screen"
-      initial={{ x: "-100%" }}
+      initial={{ x: "-100vw" }}
       animate={{ x: 0 }}
-      exit={{ x: "100%" }}
+      exit={{ scale: 0.5, opacity: 0 }}
     >
       <form onSubmit={submitHandler}>
         <label>Username:</label>
