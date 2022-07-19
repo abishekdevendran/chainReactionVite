@@ -90,6 +90,15 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("updateBoardSize", room.size);
   })
 
+  socket.on("readyReset",(roomCode)=>{
+    let room = rooms.find((r) => r.roomCode === roomCode);
+    room.users.forEach((u)=>{
+      u.isReady = false;
+    }
+    )
+    io.to(roomCode).emit("updatePlayers", room.users);
+  })
+
   socket.on("clearRooms", () => {
     console.log(socket.rooms);
     socket.leaveAll();

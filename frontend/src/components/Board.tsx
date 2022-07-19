@@ -100,6 +100,7 @@ const Board = ({
     setCanClick(false);
     setTimeout(() => {
       setHasStarted(false);
+      socket.emit("readyReset",roomCode);
     }, 5 * delay * 1000);
   };
 
