@@ -4,7 +4,7 @@ import popAudio from "../assets/pop.mp3";
 import toast from "react-hot-toast";
 import UserContext from "../contexts/UserContext";
 import SocketContext from "../contexts/SocketContext";
-import { useParams } from "react-router-dom";
+import { resolvePath, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
 interface Player {
@@ -325,19 +325,27 @@ const Board = ({
 
   return (
     <motion.div
-      className="font-poppins absolute text-center rounded-md p-2"
+      className={`font-poppins h-4/6 w-5/6 flex absolute text-center items-stretch justify-evenly rounded-md p-2 flex-col lg:flex-row`}
       style={{ backgroundColor: players[turn]?.color }}
       initial={{ x: "-100vw", y: 0 }}
       animate={{ x: 0, y: 0 }}
       exit={{ x: "100vw", y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      Game Board {players[turn].uname}{" "}
-      {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
-      <div className="board flex flex-col items-center justify-center">
-        {<div className="hello bg-white">{board.map((row, i) => {
+      <div className="titles flex items-center justify-center text-center">
+        {players[turn].uname}{"'s turn "}
+        {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
+      </div>
+      <div
+        className="board max-h-full max-w-full self-center flex flex-col justify-center items-center bg-white rounded-lg"
+        style={{ aspectRatio: `${n}/${m}` }}
+      >
+        {board.map((row, i) => {
           return (
-            <div key={i} className="board-row flex">
+            <div
+              key={i}
+              className="board-row flex items-center justify-stretch"
+            >
               {row.map((val: BoardValue, j: number) => {
                 return (
                   <Square
@@ -351,13 +359,13 @@ const Board = ({
               })}
             </div>
           );
-        })}</div>}
+        })}
       </div>
-      <div>
-        {players.map((player,i) => {
+      <div className="stats p-2 flex flex-col items-center justify-center text-center">
+        {players.map((player, i) => {
           return (
             <div
-            className="py-1"
+              className="py-1 px-3 w-full text-center rounded-3xl"
               key={player.id}
               style={{ backgroundColor: players[i]?.color }}
             >

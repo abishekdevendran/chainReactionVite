@@ -53,6 +53,15 @@ const Game = () => {
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserContext);
   const { roomCode } = useParams();
+  const [boardSize, setBoardSize] = useReducer(
+    (state, boardSize) => {
+      return {
+        n: boardSize.n,
+        m: boardSize.m,
+      };
+    },
+    { m: 6, n: 6 }
+  );
   const [players, setPlayers] = useState<Player[]>([]);
   const [boardPlayers, setBoardPlayers] = useState<Player[]>([]);
   const [hasStarted, setHasStarted] = useState(false);
@@ -83,18 +92,29 @@ const Game = () => {
   }, []);
 
   useEffect(() => {
-    console.log("game component effect");
     socket.on("updatePlayers", (players) => {
       setPlayers(players);
     });
     socket.on("startGame", () => {
       setHasStarted(true);
     });
+
     return () => {
       socket.off("updatePlayers");
       socket.off("startGame");
     };
   }, [players]);
+
+  useEffect(() => {
+    socket.on("updateBoardSize", (boardSize) => {
+      console.log(boardSize);
+      setBoardSize(boardSize);
+    });
+
+    return () => {
+      socket.off("updateBoardSize");
+    };
+  }, [boardSize]);
 
   useEffect(() => {
     if (!hasStarted) {
@@ -116,9 +136,16 @@ const Game = () => {
             players={boardPlayers}
             setPlayers={setBoardPlayers}
             setHasStarted={setHasStarted}
+            boardSize={boardSize}
           />
         ) : (
-          <Lobby players={players} isReady={isReady} setIsReady={setIsReady} />
+          <Lobby
+            players={players}
+            isReady={isReady}
+            setIsReady={setIsReady}
+            boardSize={boardSize}
+            setBoardSize={setBoardSize}
+          />
         )}
       </motion.div>
     </AnimatePresence>

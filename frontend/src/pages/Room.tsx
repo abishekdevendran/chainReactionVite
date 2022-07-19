@@ -44,7 +44,12 @@ const Room = () => {
         onSubmit={roomJoinHandler}
         className="max-w-sm rounded overflow-hidden shadow-lg text-center w-5/6 bg-bg-secondary p-5 py-9"
       >
-        <label>RoomCode:</label>
+        <h1 className="text-4xl font-semibold text-primary mb-5">
+          Chain Reaction
+        </h1>
+        <h2 className="text-xl font-semibold text-primary mb-5">
+          Room Code:
+        </h2>
         <input
           required
           type="text"

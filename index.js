@@ -59,6 +59,7 @@ io.on("connection", (socket) => {
         users: [userObject],
         hasStarted: false,
         board: [],
+        size:{m:6,n:6}
       };
       rooms.push(room);
     } else {
@@ -82,6 +83,12 @@ io.on("connection", (socket) => {
     }
     io.to(roomCode).emit("updatePlayers", room.users);
   });
+
+  socket.on("updateBoardSize", (roomCode, {m,n}) => {
+    let room = rooms.find((r) => r.roomCode === roomCode);
+    room.size = {m,n};
+    io.to(roomCode).emit("updateBoardSize", room.size);
+  })
 
   socket.on("clearRooms", () => {
     console.log(socket.rooms);
