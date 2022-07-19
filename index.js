@@ -59,6 +59,7 @@ io.on("connection", (socket) => {
         users: [userObject],
         hasStarted: false,
         board: [],
+        size:{m:6,n:6}
       };
       rooms.push(room);
     } else {
@@ -83,12 +84,28 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("updatePlayers", room.users);
   });
 
+  socket.on("updateBoardSize", (roomCode, {m,n}) => {
+    let room = rooms.find((r) => r.roomCode === roomCode);
+    room.size = {m,n};
+    io.to(roomCode).emit("updateBoardSize", room.size);
+  })
+
+  socket.on("readyReset",(roomCode)=>{
+    let room = rooms.find((r) => r.roomCode === roomCode);
+    room.users.forEach((u)=>{
+      u.isReady = false;
+    }
+    )
+    io.to(roomCode).emit("updatePlayers", room.users);
+  })
+
   socket.on("clearRooms", () => {
     console.log(socket.rooms);
     socket.leaveAll();
   });
 
   socket.on("makeMove", ({ x, y, roomCode }) => {
+    console.log("move made", x, y, roomCode,socket.id);
     socket.to(roomCode).emit("makeMove", { x, y });
   });
 

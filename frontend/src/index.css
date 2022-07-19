@@ -7,8 +7,8 @@
   :root {
     --text-primary: #fff;
     --text-secondary: #000;
-    --bg-primary: #2A2D43;
-    --bg-secondary: #7F2CCB;
+    --bg-primary: #2a2d43;
+    --bg-secondary: #7f2ccb;
     --brand-primary: #ffa9e7;
     --brand-secondary: #ff84e8;
     --brand-tertiary: #7f2ccb;
@@ -20,5 +20,16 @@
     --text-secondary: #fff;
     --bg-primary: #fff;
     --bg-secondary: pink;
+  }
+  html,
+  body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    position: relative;
+    height: 100vh;
   }
 }

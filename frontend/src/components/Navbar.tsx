@@ -11,6 +11,7 @@ import { FiSun, FiMoon } from "react-icons/fi";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import DarkModeContext from "../contexts/DarkModeContext";
 import UserContext from "../contexts/UserContext";
+import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
@@ -47,7 +48,7 @@ const Navbar = () => {
     >
       <div className="container flex justify-between items-center font-poppins text-primary py-4 px-4 max-w-screen-lg transition-all ease-in-ease-out duration-1000 text-ellipsis">
         <h1
-          className={`pb-2 text-4xl sm:text-5xl font-semibold ${
+          className={`pt-1 pb-2 text-4xl sm:text-5xl font-semibold ${
             user.isLoggedIn ? "cursor-default" : "cursor-pointer"
           } whitespace-nowrap  ${
             darkMode
@@ -63,7 +64,7 @@ const Navbar = () => {
         </h1>
         <div className="right flex">
           {!user.isLoggedIn ? (
-            <ul className="hidden sm:flex">
+            <ul className="hidden sm:flex sm:items-center sm:text-right">
               <li className="p-2 hover:opacity-80 cursor-pointer">
                 <NavLink to="login" state={{ from: true }}>
                   Login
@@ -86,11 +87,13 @@ const Navbar = () => {
           )}
           <div className=" cursor-pointer sm:hidden text-primary">
             {!nav ? (
-              <div className="animate-pulse">
+              <div className="animate-pulse pt-3">
                 <AiOutlineMenu size={30} onClick={() => setNav(!nav)} />
               </div>
             ) : (
-              <AiOutlineClose size={30} onClick={() => setNav(!nav)} />
+              <div className="animate-pulse pt-3">
+                <AiOutlineClose size={30} onClick={() => setNav(!nav)} />
+              </div>
             )}
             {!user.isLoggedIn ? (
               <ul
@@ -117,7 +120,7 @@ const Navbar = () => {
                 }`}
               >
                 <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full font-semibold">
-                  {`Welcome, ${user.name}`}
+                  {`Welcome, ${user.uname}`}
                 </li>
                 <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full">
                   Profile
@@ -135,23 +138,37 @@ const Navbar = () => {
             )}
           </div>
           {darkMode ? (
-            <FiMoon
-              size={30}
-              onClick={() => {
-                setDarkMode(!darkMode);
-                toast("Dark Mode is now ON");
-              }}
-              className="ml-3 cursor-pointer sm:mt-1"
-            />
+            <div className="m-3 cursor-pointer sm:mt-3">
+              <FiMoon
+                size={30}
+                onClick={() => {
+                  setDarkMode(!darkMode);
+                  toast("Dark Mode is now ON");
+                }}
+              />
+            </div>
           ) : (
-            <FiSun
-              size={30}
-              onClick={() => {
-                setDarkMode(!darkMode);
-                toast("Dark Mode is now OFF");
+            <motion.div
+              className="m-3 cursor-pointer sm:mt-3"
+              initial={{
+                rotate: 0,
               }}
-              className="ml-3 cursor-pointer sm:mt-1 animate-spin-slow"
-            />
+              whileHover={{
+                rotate: 90,
+                scale: 1.1,
+              }}
+              animate={{
+                rotate: 0,
+              }}
+            >
+              <FiSun
+                size={30}
+                onClick={() => {
+                  setDarkMode(!darkMode);
+                  toast("Dark Mode is now OFF");
+                }}
+              />
+            </motion.div>
           )}
         </div>
       </div>

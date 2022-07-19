@@ -4,7 +4,8 @@ import popAudio from "../assets/pop.mp3";
 import toast from "react-hot-toast";
 import UserContext from "../contexts/UserContext";
 import SocketContext from "../contexts/SocketContext";
-import { useParams } from "react-router-dom";
+import { resolvePath, useParams } from "react-router-dom";
+import { motion } from "framer-motion";
 
 interface Player {
   id: number;
@@ -99,6 +100,7 @@ const Board = ({
     setCanClick(false);
     setTimeout(() => {
       setHasStarted(false);
+      socket.emit("readyReset",roomCode);
     }, 5 * delay * 1000);
   };
 
@@ -323,16 +325,28 @@ const Board = ({
   }, [turn]);
 
   return (
-    <div
-      className="font-poppins"
+    <motion.div
+      className={`font-poppins h-4/6 w-5/6 flex absolute text-center items-stretch justify-evenly rounded-md p-2 flex-col lg:flex-row`}
       style={{ backgroundColor: players[turn]?.color }}
+      initial={{ x: "-100vw", y: 0 }}
+      animate={{ x: 0, y: 0 }}
+      exit={{ x: "100vw", y: 0 }}
+      transition={{ duration: 0.5 }}
     >
-      Game Board {players[turn].uname}{" "}
-      {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
-      <div className="board flex flex-col items-center justify-center">
+      <div className="titles flex items-center justify-center text-center">
+        {players[turn].uname}{"'s turn "}
+        {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
+      </div>
+      <div
+        className="board max-h-full max-w-full self-center flex flex-col justify-center items-center bg-white rounded-lg"
+        style={{ aspectRatio: `${n}/${m}` }}
+      >
         {board.map((row, i) => {
           return (
-            <div key={i} className="board-row flex">
+            <div
+              key={i}
+              className="board-row flex items-center justify-stretch"
+            >
               {row.map((val: BoardValue, j: number) => {
                 return (
                   <Square
@@ -348,24 +362,32 @@ const Board = ({
           );
         })}
       </div>
-      <div>
-        {players.map((player) => {
+      <div className="stats p-2 flex flex-col items-center justify-center text-center">
+        {players.map((player, i) => {
           return (
-            <div key={player.id}>
+            <div
+              className="py-1 px-3 w-full text-center rounded-3xl"
+              key={player.id}
+              style={{ backgroundColor: players[i]?.color }}
+            >
               {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
-              {player.uname===user.uname && <button
-                onClick={() => {
-                  socket.emit("playerForfeit", roomCode, player.id);
-                  forfeitManager(player.id);
-                }}
-              >
-                Foreit
-              </button>}
+              {player.uname === user.uname && (
+                <motion.button
+                  className="bg-brand-primary text-brand-tertiary font-bold px-4 rounded mx-2"
+                  onClick={() => {
+                    socket.emit("playerForfeit", roomCode, player.id);
+                    forfeitManager(player.id);
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                >
+                  Forfeit
+                </motion.button>
+              )}
             </div>
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
