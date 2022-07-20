@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
       };
       rooms.push(room);
     } else {
-      if (room.users.find((u) => u.name === user.name)) {
+      if (room.users.find((u) => u.uname === user.uname)) {
         fn(false);
         return;
       }
