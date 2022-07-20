@@ -45,6 +45,7 @@ const Board = ({
   const { user } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
   const [waitAfterWin, setWaitAfterWin] = useState(false);
+  const [lastMove, setLastMove] = useState<{x:number,y:number, color:string} | null>(null);
   const [board, setBoard] = useState(() => {
     return Array(m)
       .fill(0)
@@ -293,6 +294,7 @@ const Board = ({
 
   const moveHandler = (x: number, y: number) => {
     console.log(`${players[turn].uname} moved ${x}, ${y}`, turn);
+    setLastMove({ x:x, y:y, color: players[turn].color });
     let newBoard = [...board];
     newBoard[y][x] = {
       value: board[y][x].value + 1,
@@ -352,6 +354,7 @@ const Board = ({
               className="board-row flex items-center justify-stretch"
             >
               {row.map((val: BoardValue, j: number) => {
+                let lastMoveSquare= lastMove?.x === j && lastMove?.y === i;
                 return (
                   <Square
                     key={j}
@@ -359,6 +362,7 @@ const Board = ({
                     color={val.color}
                     index={{ x: j, y: i }}
                     clickHandler={clickHandler}
+                    lastMoveSquare={lastMoveSquare?lastMove?.color:false}
                   />
                 );
               })}
