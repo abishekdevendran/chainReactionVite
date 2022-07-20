@@ -22,6 +22,7 @@ interface BoardProps {
   delay: number;
   players: Player[];
   setPlayers: (players: Player[]) => void;
+  hasStarted: boolean;
   setHasStarted: (hasStarted: boolean) => void;
 }
 
@@ -36,12 +37,14 @@ const Board = ({
   delay = 1,
   players,
   setPlayers,
+  hasStarted,
   setHasStarted,
 }: BoardProps) => {
   const { roomCode } = useParams();
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
+  const [waitAfterWin, setWaitAfterWin] = useState(false);
   const [board, setBoard] = useState(() => {
     return Array(m)
       .fill(0)
@@ -98,6 +101,7 @@ const Board = ({
     let winner = players.find((player) => !player.eliminated);
     toast.success(`Player ${winner?.uname} has won!`);
     setCanClick(false);
+    setWaitAfterWin(true);
     setTimeout(() => {
       setHasStarted(false);
       socket.emit("readyReset",roomCode);
@@ -373,12 +377,13 @@ const Board = ({
               {player.uname} {player.count > 0 ? `(${player.count})` : `(0)`}
               {player.uname === user.uname && (
                 <motion.button
-                  className="bg-brand-primary text-brand-tertiary font-bold px-4 rounded mx-2"
+                  className="bg-brand-primary text-brand-tertiary font-bold px-4 rounded mx-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
+                  whileHover={{ scale: !waitAfterWin ? 1.1 : 1 }}
+                  disabled={!waitAfterWin? false : true}
                   onClick={() => {
                     socket.emit("playerForfeit", roomCode, player.id);
                     forfeitManager(player.id);
                   }}
-                  whileHover={{ scale: 1.1 }}
                 >
                   Forfeit
                 </motion.button>

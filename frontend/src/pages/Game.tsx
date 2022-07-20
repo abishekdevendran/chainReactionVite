@@ -135,6 +135,7 @@ const Game = () => {
           <Gamemanager
             players={boardPlayers}
             setPlayers={setBoardPlayers}
+            hasStarted={hasStarted}
             setHasStarted={setHasStarted}
             boardSize={boardSize}
           />
