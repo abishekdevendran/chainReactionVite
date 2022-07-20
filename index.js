@@ -59,17 +59,21 @@ io.on("connection", (socket) => {
         users: [userObject],
         hasStarted: false,
         board: [],
-        size:{m:6,n:6}
+        size: { m: 6, n: 6 },
       };
       rooms.push(room);
     } else {
+      if (room.users.find((u) => u.name === user.name)) {
+        fn(false);
+        return;
+      }
       room.users.push(userObject);
       if (room.hasStarted) {
         socket.emit("startGame");
       }
     }
     socket.to(roomCode).emit("updatePlayers", room.users);
-    fn(room.users,room.size);
+    fn(true, room.users, room.size);
   });
   socket.on("updateReady", (roomCode, user) => {
     let room = rooms.find((r) => r.roomCode === roomCode);
@@ -83,20 +87,19 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("updatePlayers", room.users);
   });
 
-  socket.on("updateBoardSize", (roomCode, {m,n}) => {
+  socket.on("updateBoardSize", (roomCode, { m, n }) => {
     let room = rooms.find((r) => r.roomCode === roomCode);
-    room.size = {m,n};
+    room.size = { m, n };
     io.to(roomCode).emit("updateBoardSize", room.size);
-  })
+  });
 
-  socket.on("readyReset",(roomCode)=>{
+  socket.on("readyReset", (roomCode) => {
     let room = rooms.find((r) => r.roomCode === roomCode);
-    room.users.forEach((u)=>{
+    room.users.forEach((u) => {
       u.isReady = false;
-    }
-    )
+    });
     io.to(roomCode).emit("updatePlayers", room.users);
-  })
+  });
 
   socket.on("clearRooms", () => {
     console.log(socket.rooms);
@@ -104,14 +107,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("makeMove", ({ x, y, roomCode }) => {
-    console.log("move made", x, y, roomCode,socket.id);
+    console.log("move made", x, y, roomCode, socket.id);
     socket.to(roomCode).emit("makeMove", { x, y });
   });
 
-  socket.on("playerForfeit", (roomCode,id) => {
+  socket.on("playerForfeit", (roomCode, id) => {
     console.log("forfeit");
-    socket.to(roomCode).emit("playerForfeit",id);
-  })
+    socket.to(roomCode).emit("playerForfeit", id);
+  });
 });
 
 io.sockets.adapter.on("delete-room", (roomCode) => {

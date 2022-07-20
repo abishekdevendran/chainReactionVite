@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import toast from "react-hot-toast";
-import { Navigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import Gamemanager from "../components/Gamemanager";
 import Lobby from "../components/Lobby";
 import SocketContext from "../contexts/SocketContext";
@@ -50,6 +50,7 @@ interface Player {
 }
 
 const Game = () => {
+  const navigate=useNavigate();
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserContext);
   const { roomCode } = useParams();
@@ -75,7 +76,12 @@ const Game = () => {
 
   const roomJoinManager = () => {
     console.log(user);
-    socket.emit("roomJoin", roomCode, user, (players,boardSize) => {
+    socket.emit("roomJoin", roomCode, user, (isValidName,players,boardSize) => {
+      if(!isValidName){
+        toast.error("User already exists in room.");
+        navigate("/game");
+        return;
+      }
       localStorage.removeItem("board");
       setPlayers(players);
       setBoardSize(boardSize);
