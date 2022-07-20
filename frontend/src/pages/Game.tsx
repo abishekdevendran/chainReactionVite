@@ -75,8 +75,10 @@ const Game = () => {
 
   const roomJoinManager = () => {
     console.log(user);
-    socket.emit("roomJoin", roomCode, user, (players) => {
+    socket.emit("roomJoin", roomCode, user, (players,boardSize) => {
       localStorage.removeItem("board");
+      setPlayers(players);
+      setBoardSize(boardSize);
       toast.success("Room joined successfully");
     });
   };

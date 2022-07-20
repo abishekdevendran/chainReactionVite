@@ -68,9 +68,8 @@ io.on("connection", (socket) => {
         socket.emit("startGame");
       }
     }
-    console.log(userObject);
-    io.to(roomCode).emit("updatePlayers", room.users);
-    fn(room.users);
+    socket.to(roomCode).emit("updatePlayers", room.users);
+    fn(room.users,room.size);
   });
   socket.on("updateReady", (roomCode, user) => {
     let room = rooms.find((r) => r.roomCode === roomCode);
