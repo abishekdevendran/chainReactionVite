@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
       };
       rooms.push(room);
     } else {
-      if (room.users.find((u) => u.uname === user.uname)) {
+      if (room.users?.find((u) => u.uname === user.uname)) {
         fn(false);
         return;
       }
@@ -95,7 +95,7 @@ io.on("connection", (socket) => {
 
   socket.on("readyReset", (roomCode) => {
     let room = rooms.find((r) => r.roomCode === roomCode);
-    room.users.forEach((u) => {
+    room.users?.forEach((u) => {
       u.isReady = false;
     });
     io.to(roomCode).emit("updatePlayers", room.users);

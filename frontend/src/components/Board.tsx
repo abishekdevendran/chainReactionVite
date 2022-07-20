@@ -1,11 +1,15 @@
-import { useContext, useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import Square from "./Square";
 import popAudio from "../assets/pop.mp3";
 import toast from "react-hot-toast";
 import UserContext from "../contexts/UserContext";
 import SocketContext from "../contexts/SocketContext";
-import { resolvePath, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import {
+  ImVolumeHigh,
+  ImVolumeLow, ImVolumeMedium, ImVolumeMute2,
+} from "react-icons/im";
 
 interface Player {
   id: number;
@@ -45,7 +49,16 @@ const Board = ({
   const { user } = useContext(UserContext);
   const [canClick, setCanClick] = useState(true);
   const [waitAfterWin, setWaitAfterWin] = useState(false);
-  const [lastMove, setLastMove] = useState<{x:number,y:number, color:string} | null>(null);
+  const [lastMove, setLastMove] = useState<{
+    x: number;
+    y: number;
+    color: string;
+  } | null>(null);
+  const [volume, setVolume] = useState(100);
+  const [volumeVisibility, toggleVolumeVisibility] = useReducer(
+    (state: boolean) => !state,
+    false
+  );
   const [board, setBoard] = useState(() => {
     return Array(m)
       .fill(0)
@@ -69,7 +82,7 @@ const Board = ({
 
   const createPop = () => {
     let audioinstance = new Audio(popAudio);
-    audioinstance.volume = 0.02;
+    audioinstance.volume = 0.1*volume/100;
     audioinstance.play();
   };
 
@@ -105,7 +118,7 @@ const Board = ({
     setWaitAfterWin(true);
     setTimeout(() => {
       setHasStarted(false);
-      socket.emit("readyReset",roomCode);
+      socket.emit("readyReset", roomCode);
     }, 5 * delay * 1000);
   };
 
@@ -294,7 +307,7 @@ const Board = ({
 
   const moveHandler = (x: number, y: number) => {
     console.log(`${players[turn].uname} moved ${x}, ${y}`, turn);
-    setLastMove({ x:x, y:y, color: players[turn].color });
+    setLastMove({ x: x, y: y, color: players[turn].color });
     let newBoard = [...board];
     newBoard[y][x] = {
       value: board[y][x].value + 1,
@@ -330,18 +343,62 @@ const Board = ({
     };
   }, [turn]);
 
+  const volumeItem = useRef<any>(null);
+  useEffect(() => {
+    let mouseUpHandler = (e) => {
+      if (!volumeItem.current?.contains(e.target) && volumeVisibility) {
+        toggleVolumeVisibility();
+      }
+    };
+
+    document.addEventListener("mouseup", mouseUpHandler);
+
+    return () => {
+      document.removeEventListener("mouseup", mouseUpHandler);
+    };
+  }, [volumeItem,volumeVisibility,toggleVolumeVisibility]);
+
   return (
     <motion.div
-      className={`font-poppins h-4/6 w-5/6 flex absolute text-center items-stretch justify-evenly rounded-md p-2 flex-col lg:flex-row`}
+      className={`font-poppins h-4/6 w-5/6 flex absolute text-center items-stretch justify-evenly rounded-md p-2 flex-col lg:flex-row select-none`}
       style={{ backgroundColor: players[turn]?.color }}
       initial={{ x: "-100vw", y: 0 }}
       animate={{ x: 0, y: 0 }}
       exit={{ x: "100vw", y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="titles flex items-center justify-center text-center">
-        {players[turn].uname}{"'s turn "}
-        {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
+      <div className="top-container flex items-center justify-center">
+        <div className="titles flex items-center justify-center text-center">
+          {players[turn].uname}
+          {"'s turn "}
+          {players[turn].count > 0 ? `(${players[turn].count})` : `(0)`}
+        </div>
+        <div className="volume relative ml-2" ref={volumeItem}>
+          {volume > 0 ? (
+            volume > 33 ? (
+              volume > 66 ? (
+                <ImVolumeHigh size={30} onClick={toggleVolumeVisibility} />
+              ) : (
+                <ImVolumeMedium size={30} onClick={toggleVolumeVisibility} />
+              )
+            ) : (
+              <ImVolumeLow size={30} onClick={toggleVolumeVisibility} />
+            )
+          ) : (
+            <ImVolumeMute2 size={30} onClick={toggleVolumeVisibility} />
+          )}
+          {volumeVisibility && (
+            <div className="absolute text-center rounded-3xl right-1/2 bottom-8 bg-bg-primary">
+              <input
+                value={volume}
+                type="range"
+                min="0"
+                max="100"
+                onChange={(e) => setVolume(parseInt(e.target.value))}
+              />
+            </div>
+          )}
+        </div>
       </div>
       <div
         className="board max-h-full max-w-full self-center flex flex-col justify-center items-center bg-white rounded-lg"
@@ -354,7 +411,7 @@ const Board = ({
               className="board-row flex items-center justify-stretch"
             >
               {row.map((val: BoardValue, j: number) => {
-                let lastMoveSquare= lastMove?.x === j && lastMove?.y === i;
+                let lastMoveSquare = lastMove?.x === j && lastMove?.y === i;
                 return (
                   <Square
                     key={j}
@@ -362,7 +419,7 @@ const Board = ({
                     color={val.color}
                     index={{ x: j, y: i }}
                     clickHandler={clickHandler}
-                    lastMoveSquare={lastMoveSquare?lastMove?.color:false}
+                    lastMoveSquare={lastMoveSquare ? lastMove?.color : false}
                   />
                 );
               })}
@@ -383,7 +440,7 @@ const Board = ({
                 <motion.button
                   className="bg-brand-primary text-brand-tertiary font-bold px-4 rounded mx-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
                   whileHover={{ scale: !waitAfterWin ? 1.1 : 1 }}
-                  disabled={!waitAfterWin? false : true}
+                  disabled={!waitAfterWin ? false : true}
                   onClick={() => {
                     socket.emit("playerForfeit", roomCode, player.id);
                     forfeitManager(player.id);
