@@ -446,6 +446,7 @@ const Board = ({
                   disabled={!waitAfterWin ? false : true}
                   onClick={() => {
                     socket.emit("playerForfeit", roomCode, player.id);
+                    setWaitAfterWin(true);
                     forfeitManager(player.id);
                   }}
                 >
