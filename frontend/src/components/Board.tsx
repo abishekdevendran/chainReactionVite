@@ -28,6 +28,7 @@ interface BoardProps {
   setPlayers: (players: Player[]) => void;
   hasStarted: boolean;
   setHasStarted: (hasStarted: boolean) => void;
+  setIsReady: (isReady: boolean) => void;
 }
 
 interface BoardValue {
@@ -43,6 +44,7 @@ const Board = ({
   setPlayers,
   hasStarted,
   setHasStarted,
+  setIsReady
 }: BoardProps) => {
   const { roomCode } = useParams();
   const { socket } = useContext(SocketContext);
@@ -118,7 +120,8 @@ const Board = ({
     setWaitAfterWin(true);
     setTimeout(() => {
       setHasStarted(false);
-      socket.emit("readyReset", roomCode);
+      setIsReady(false);
+      // socket.emit("readyReset", roomCode);
     }, 5 * delay * 1000);
   };
 

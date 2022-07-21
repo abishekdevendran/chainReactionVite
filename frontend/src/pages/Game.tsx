@@ -146,6 +146,7 @@ const Game = () => {
             hasStarted={hasStarted}
             setHasStarted={setHasStarted}
             boardSize={boardSize}
+            setIsReady={setIsReady}
           />
         ) : (
           <Lobby

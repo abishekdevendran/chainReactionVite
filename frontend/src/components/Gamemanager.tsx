@@ -2,7 +2,7 @@ import toast from "react-hot-toast";
 import Board from "./Board";
 import { motion } from "framer-motion";
 
-const Gamemanager = ({players, setPlayers, hasStarted, setHasStarted,boardSize}) => {
+const Gamemanager = ({players, setPlayers, hasStarted, setHasStarted,boardSize,setIsReady}) => {
   return (
       <motion.div
         className="absolute min-w-full min-h-full pt-32 sm:pt-16 flex flex-col items-center justify-center"
@@ -19,6 +19,7 @@ const Gamemanager = ({players, setPlayers, hasStarted, setHasStarted,boardSize})
           setPlayers={setPlayers}
           hasStarted={hasStarted}
           setHasStarted={setHasStarted}
+          setIsReady={setIsReady}
         />
       </motion.div>
   );
