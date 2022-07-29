@@ -66,6 +66,7 @@ const Game = () => {
   const [players, setPlayers] = useState<Player[]>([]);
   const [boardPlayers, setBoardPlayers] = useState<Player[]>([]);
   const [hasStarted, setHasStarted] = useState(false);
+  const [sHasStarted, setSHasStarted] = useState(false);
   const [isReady, setIsReady] = useReducer((state) => {
     players.find((player) => player.uname === user.uname)!.isReady = !state;
     socket.emit("updateReady", roomCode, user, (players) => {
@@ -76,7 +77,7 @@ const Game = () => {
 
   const roomJoinManager = () => {
     console.log(user);
-    socket.emit("roomJoin", roomCode, user, (isValidName,players,boardSize) => {
+    socket.emit("roomJoin", roomCode, user, (isValidName,players,boardSize,sHasStarted) => {
       if(!isValidName){
         toast.error("User already exists in room.");
         navigate("/game");
@@ -86,6 +87,7 @@ const Game = () => {
       setPlayers(players);
       setBoardSize(boardSize);
       toast.success("Room joined successfully");
+      setSHasStarted(sHasStarted);
     });
   };
 
@@ -106,10 +108,14 @@ const Game = () => {
     socket.on("startGame", () => {
       setHasStarted(true);
     });
+    socket.on("updateSHasStarted", (sHasStarted) => {
+      setSHasStarted(sHasStarted);
+    })
 
     return () => {
       socket.off("updatePlayers");
       socket.off("startGame");
+      socket.off("updateSHasStarted");
     };
   }, [players]);
 
@@ -155,6 +161,7 @@ const Game = () => {
             setIsReady={setIsReady}
             boardSize={boardSize}
             setBoardSize={setBoardSize}
+            sHasStarted={sHasStarted}
           />
         )}
       </motion.div>

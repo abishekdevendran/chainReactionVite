@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { useContext } from "react";
 import SocketContext from "../contexts/SocketContext";
 
-const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize }) => {
+const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize, sHasStarted }) => {
   const { socket } = useContext(SocketContext);
   const { roomCode } = useParams();
   const copyManager = () => {
@@ -71,7 +71,6 @@ const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize }) => {
             setBoardSize(newBoardSize);
             socket.emit("updateBoardSize", roomCode, newBoardSize);
           }}
-          defaultValue={String(boardSize.m)}
           value={String(boardSize.m)}
         >
           <option value="4">4</option>
@@ -99,7 +98,6 @@ const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize }) => {
             setBoardSize(newBoardSize);
             socket.emit("updateBoardSize", roomCode, newBoardSize);
           }}
-          defaultValue={String(boardSize.n)}
           value={String(boardSize.n)}
         >
           <option value="4">4</option>
@@ -120,7 +118,7 @@ const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize }) => {
         onClick={setIsReady}
         className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
         whileHover={{ scale: players.length > 0 ? 1.1 : 1 }}
-        disabled={players.length > 0 ? false : true}
+        disabled={players.length > 0 ? (sHasStarted?true:false) : true}
       >
         {isReady ? "UnReady" : "I am Ready!"}
       </motion.button>

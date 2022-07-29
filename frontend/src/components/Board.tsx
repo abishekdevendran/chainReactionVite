@@ -8,7 +8,9 @@ import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ImVolumeHigh,
-  ImVolumeLow, ImVolumeMedium, ImVolumeMute2,
+  ImVolumeLow,
+  ImVolumeMedium,
+  ImVolumeMute2,
 } from "react-icons/im";
 
 interface Player {
@@ -44,8 +46,9 @@ const Board = ({
   setPlayers,
   hasStarted,
   setHasStarted,
-  setIsReady
+  setIsReady,
 }: BoardProps) => {
+  const audioinstance = new Audio(popAudio);
   const { roomCode } = useParams();
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserContext);
@@ -83,14 +86,16 @@ const Board = ({
   }, 0);
 
   const createPop = () => {
-    let audioinstance = new Audio(popAudio);
-    audioinstance.volume = 0.1*volume/100;
+    audioinstance.volume = (0.1 * volume) / 100;
     audioinstance.play();
   };
 
   const forfeitManager = (id: number) => {
     let forfeitPlayer = players.find((player) => player.id === id);
     let foundIndex = players.findIndex((player) => player.id === id);
+    if(foundIndex===-1){
+      return;
+    }
     console.log(`Player ${forfeitPlayer?.uname} has forfeited`);
     toast(`Player ${forfeitPlayer?.uname} has forfeited`);
     let newBoard = [...board];
@@ -119,6 +124,7 @@ const Board = ({
     setCanClick(false);
     setWaitAfterWin(true);
     setTimeout(() => {
+      socket.emit("updateSHasStarted", roomCode, false);
       setHasStarted(false);
       setIsReady(false);
       // socket.emit("readyReset", roomCode);
@@ -359,7 +365,7 @@ const Board = ({
     return () => {
       document.removeEventListener("mouseup", mouseUpHandler);
     };
-  }, [volumeItem,volumeVisibility,toggleVolumeVisibility]);
+  }, [volumeItem, volumeVisibility, toggleVolumeVisibility]);
 
   return (
     <motion.div

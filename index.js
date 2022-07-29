@@ -68,20 +68,17 @@ io.on("connection", (socket) => {
         return;
       }
       room.users.push(userObject);
-      if (room.hasStarted) {
-        socket.emit("startGame");
-      }
     }
     socket.to(roomCode).emit("updatePlayers", room.users);
-    fn(true, room.users, room.size);
+    fn(true, room.users, room.size, room.hasStarted);
+    console.log(room.hasStarted);
   });
   socket.on("updateReady", (roomCode, user) => {
     let room = rooms.find((r) => r.roomCode === roomCode);
     let player = room.users.find((u) => u.uname === user.uname);
     player.isReady = !player.isReady;
-    console.log(player.isReady);
     if (room.users.length >= 2 && room.users.every((u) => u.isReady)) {
-      room = { ...room, hasStarted: true };
+      room.hasStarted=true;
       io.to(roomCode).emit("startGame", room.board);
     }
     io.to(roomCode).emit("updatePlayers", room.users);
@@ -99,6 +96,12 @@ io.on("connection", (socket) => {
       u.isReady = false;
     });
     io.to(roomCode).emit("updatePlayers", room.users);
+  });
+
+  socket.on("updateSHasStarted", (roomCode, hasStarted) => {
+    let room = rooms.find((r) => r.roomCode === roomCode);
+    room.hasStarted = hasStarted;
+    io.to(roomCode).emit("updateSHasStarted", hasStarted);
   });
 
   socket.on("clearRooms", () => {
