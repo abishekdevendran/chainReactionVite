@@ -34,7 +34,7 @@ const Room = () => {
   },[])
   return (
     <motion.div
-      className="absolute min-w-full min-h-screen flex items-center justify-center h-screen bg-bg-primary"
+      className="absolute min-w-full min-h-screen flex items-center justify-center h-screen bg-bg-primary ease-in-out transition-colors duration-300"
       initial={{ x: "-100vw", y: 0 }}
       animate={{ x: 0, y: 0 }}
       exit={{ x: "100vw", y: 0 }}
@@ -47,9 +47,7 @@ const Room = () => {
         <h1 className="text-4xl font-semibold text-primary mb-5">
           Chain Reaction
         </h1>
-        <h2 className="text-xl font-semibold text-primary mb-5">
-          Room Code:
-        </h2>
+        <h2 className="text-xl font-semibold text-primary mb-5">Room Code:</h2>
         <input
           required
           type="text"

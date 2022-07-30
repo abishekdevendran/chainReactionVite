@@ -30,7 +30,7 @@ const Login = () => {
   };
   return (
     <motion.div
-      className="absolute min-w-full min-h-screen flex items-center justify-center h-screen font-poppins bg-brand-grey-secondary"
+      className="absolute min-w-full min-h-screen flex items-center justify-center h-screen font-poppins bg-brand-grey-secondary ease-in-out transition-colors duration-300"
       initial={{ x: "-100vw", y: 0 }}
       animate={{ x: 0, y: 0 }}
       exit={{ x: "100vw", y: 0 }}

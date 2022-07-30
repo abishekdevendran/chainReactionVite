@@ -139,7 +139,7 @@ const Game = () => {
   return (
     <AnimatePresence initial={false}>
       <motion.div
-        className="absolute min-w-full min-h-screen bg-bg-primary flex items-center justify-center"
+        className="absolute min-w-full min-h-screen bg-bg-primary flex items-center justify-center ease-in-out transition-colors duration-300"
         initial={{ x: "-100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
