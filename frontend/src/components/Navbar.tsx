@@ -74,9 +74,6 @@ const Navbar = () => {
           ) : (
             <ul className="hidden sm:flex sm:items-center sm:text-right">
               <li className="p-2 cursor-default font-semibold">{`Welcome, ${user.uname}`}</li>
-              <li className="p-2 hover:opacity-80 cursor-pointer">
-                {user.loginCount}
-              </li>
               <li
                 className="p-2 hover:opacity-80 cursor-pointer"
                 onClick={logoutHandler}
@@ -102,7 +99,7 @@ const Navbar = () => {
                   nav ? "left-0" : "-left-full"
                 }`}
               >
-                <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full">
+                <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-b-2 border-brand-primary text-right w-full">
                   <NavLink
                     to="login"
                     onClick={() => setNav(false)}
@@ -121,9 +118,6 @@ const Navbar = () => {
               >
                 <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full font-semibold">
                   {`Welcome, ${user.uname}`}
-                </li>
-                <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full">
-                  Profile
                 </li>
                 <li
                   className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-b-2 border-t-2 border-brand-primary text-right w-full"
