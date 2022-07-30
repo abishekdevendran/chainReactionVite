@@ -12,6 +12,7 @@ import {
   ImVolumeMedium,
   ImVolumeMute2,
 } from "react-icons/im";
+import useSound from "use-sound";
 
 interface Player {
   id: number;
@@ -48,7 +49,6 @@ const Board = ({
   setHasStarted,
   setIsReady,
 }: BoardProps) => {
-  const audioinstance = new Audio(popAudio);
   const { roomCode } = useParams();
   const { socket } = useContext(SocketContext);
   const { user } = useContext(UserContext);
@@ -60,6 +60,7 @@ const Board = ({
     color: string;
   } | null>(null);
   const [volume, setVolume] = useState(100);
+  const [audioinstance]=useSound(popAudio,{volume:volume/100});
   const [volumeVisibility, toggleVolumeVisibility] = useReducer(
     (state: boolean) => !state,
     false
@@ -85,15 +86,10 @@ const Board = ({
     return newTurn;
   }, 0);
 
-  const createPop = () => {
-    audioinstance.volume = (0.1 * volume) / 100;
-    audioinstance.play();
-  };
-
   const forfeitManager = (id: number) => {
     let forfeitPlayer = players.find((player) => player.id === id);
     let foundIndex = players.findIndex((player) => player.id === id);
-    if(foundIndex===-1){
+    if (foundIndex === -1) {
       return;
     }
     console.log(`Player ${forfeitPlayer?.uname} has forfeited`);
@@ -261,7 +257,7 @@ const Board = ({
     });
     setPlayers([...players]);
     setBoard(newBoard);
-    createPop();
+    audioinstance();
 
     //Stop Looping on win conition
     if (players.filter((player) => !player.eliminated).length === 1) {
@@ -323,7 +319,7 @@ const Board = ({
       color: players[turn].color,
     };
     setBoard(newBoard);
-    createPop();
+    audioinstance();
     //Increment count for player
     players[turn].count++;
     //If no explosions caused, return.
@@ -369,14 +365,14 @@ const Board = ({
 
   return (
     <motion.div
-      className={`font-poppins h-4/6 w-5/6 flex absolute text-center items-stretch justify-evenly rounded-md p-2 flex-col lg:flex-row select-none`}
+      className={`font-poppins h-full w-5/6 flex text-center items-stretch justify-evenly rounded-md p-2 mb-2 flex-col lg:flex-row select-none`}
       style={{ backgroundColor: players[turn]?.color }}
       initial={{ x: "-100vw", y: 0 }}
       animate={{ x: 0, y: 0 }}
       exit={{ x: "100vw", y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="top-container flex items-center justify-center">
+      <div className="top-container flex items-center justify-center m-2">
         <div className="titles flex items-center justify-center text-center">
           {players[turn].uname}
           {"'s turn "}
@@ -409,32 +405,36 @@ const Board = ({
           )}
         </div>
       </div>
-      <div
-        className="board max-h-full max-w-full self-center flex flex-col justify-center items-center bg-white rounded-lg"
-        style={{ aspectRatio: `${n}/${m}` }}
-      >
-        {board.map((row, i) => {
-          return (
-            <div
-              key={i}
-              className="board-row flex items-center justify-stretch"
-            >
-              {row.map((val: BoardValue, j: number) => {
-                let lastMoveSquare = lastMove?.x === j && lastMove?.y === i;
-                return (
-                  <Square
-                    key={j}
-                    value={val.value}
-                    color={val.color}
-                    index={{ x: j, y: i }}
-                    clickHandler={clickHandler}
-                    lastMoveSquare={lastMoveSquare ? lastMove?.color : false}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
+      <div className="containerBoard self-center w-full h-full max-h-full max-w-full grid justify-items-center
+      items-stretch
+      ">
+        <div
+          style={{ aspectRatio: `${n}/${m}` }}
+          className="board max-h-full max-w-full w-max min-h-max bg-white flex flex-col flex-nowrap items-center justify-center rounded-lg"
+        >
+          {board.map((row, i) => {
+            return (
+              <div
+                key={i}
+                className="board-row flex h-full w-full items-center justify-center"
+              >
+                {row.map((val: BoardValue, j: number) => {
+                  let lastMoveSquare = lastMove?.x === j && lastMove?.y === i;
+                  return (
+                    <Square
+                      key={j}
+                      value={val.value}
+                      color={val.color}
+                      index={{ x: j, y: i }}
+                      clickHandler={clickHandler}
+                      lastMoveSquare={lastMoveSquare ? lastMove?.color : false}
+                    />
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
       </div>
       <div className="stats p-2 flex flex-col items-center justify-center text-center">
         {players.map((player, i) => {

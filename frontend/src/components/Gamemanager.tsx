@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 const Gamemanager = ({players, setPlayers, hasStarted, setHasStarted,boardSize,setIsReady}) => {
   return (
       <motion.div
-        className="absolute min-w-full min-h-full pt-24 sm:pt-16 flex flex-col items-center justify-center"
+        className="absolute h-full w-full max-h-full max-w-full pt-24 flex flex-col items-center justify-center"
         initial={{ x: "-100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}

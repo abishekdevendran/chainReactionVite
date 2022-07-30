@@ -20,6 +20,7 @@
     "react-icons": "^4.4.0",
     "react-router-dom": "^6.3.0",
     "socket.io-client": "^4.5.1",
+    "use-sound": "^4.0.1",
     "workbox-recipes": "^6.2.4",
     "workbox-routing": "^6.2.4",
     "workbox-strategies": "^6.2.4"
