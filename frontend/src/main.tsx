@@ -26,6 +26,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               exit={{ opacity:0, y: "-200%" }}
             >
               {resolveValue(t.message, t)}
+              {t.icon}
             </motion.div>
           )}
         </Toaster>

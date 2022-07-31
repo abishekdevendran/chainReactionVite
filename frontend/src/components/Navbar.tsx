@@ -137,7 +137,7 @@ const Navbar = () => {
                 size={30}
                 onClick={() => {
                   setDarkMode(!darkMode);
-                  toast("Dark Mode is now ON");
+                  toast.success("Dark Mode is now ON");
                 }}
               />
             </div>
@@ -159,7 +159,7 @@ const Navbar = () => {
                 size={30}
                 onClick={() => {
                   setDarkMode(!darkMode);
-                  toast("Dark Mode is now OFF");
+                  toast.success("Dark Mode is now OFF");
                 }}
               />
             </motion.div>

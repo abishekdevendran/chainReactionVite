@@ -7,7 +7,7 @@ const Square = ({ value=0, color="red", index , clickHandler, lastMoveSquare }) 
   return (
     <motion.div
       ref={squareRef}
-      className={`h-5/6 w-5/6 flex text-center items-center justify-around cursor-pointer bg-slate-300 m-1 rounded-md text-2xl sm:text-3xl lg:text-4xl xl:text-5xl ${
+      className={`h-5/6 w-5/6 flex text-center items-center justify-around cursor-pointer bg-slate-300 m-1 rounded-md text-2xl sm:text-3xl lg:text-4xl xl:text-5xl shadow-lg drop-shadow-lg ${
         lastMoveSquare && "outline-dashed outline-2"
       }`}
       onClick={(e) => clickHandler(e, index.x, index.y)}

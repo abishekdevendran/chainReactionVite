@@ -84,6 +84,19 @@ io.on("connection", (socket) => {
     io.to(roomCode).emit("updatePlayers", room.users);
   });
 
+  socket.on("updateColor", (roomCode, user, color) => {
+    if(roomCode===null || user===null || color===null){
+      return;
+    }
+    let room = rooms.find((r) => r.roomCode === roomCode);
+    let player = room.users.find((u) => u.uname === user.uname);
+    if(room.users.some((u)=>u.color===color)){
+      return;
+    }
+    player.color = color;
+    io.to(roomCode).emit("updatePlayers", room.users);
+  });
+
   socket.on("updateBoardSize", (roomCode, { m, n }) => {
     let room = rooms.find((r) => r.roomCode === roomCode);
     room.size = { m, n };

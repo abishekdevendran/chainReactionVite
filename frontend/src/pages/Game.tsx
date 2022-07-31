@@ -74,6 +74,10 @@ const Game = () => {
     });
     return !state;
   }, false);
+  // const [color,setColor] = useState(()=>{
+  //   const color = players.find((player) => player.uname === user.uname)!.color;
+  //   return color?color:"#3cccbc";
+  // });
 
   const roomJoinManager = () => {
     console.log(user);

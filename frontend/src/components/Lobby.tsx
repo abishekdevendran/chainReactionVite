@@ -2,10 +2,20 @@ import toast from "react-hot-toast";
 import { MdContentCopy, MdShare } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useParams } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import SocketContext from "../contexts/SocketContext";
+import { HexColorPicker } from "react-colorful";
+import UserContext from "../contexts/UserContext";
 
-const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize, sHasStarted }) => {
+const Lobby = ({
+  players,
+  isReady,
+  setIsReady,
+  boardSize,
+  setBoardSize,
+  sHasStarted,
+}) => {
+  const { user } = useContext(UserContext);
   const { socket } = useContext(SocketContext);
   const { roomCode } = useParams();
   const copyManager = () => {
@@ -19,6 +29,37 @@ const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize, sHasStar
       url: window.location.href,
     });
   };
+  const colorPickerRef = useRef<any>(null);
+  const colorButtonRef = useRef<any>(null);
+  const [isColorPickerOpen, toggleColorPicker] = useReducer((state) => {
+    console.log("state changed from",state," to ", !state);
+    return !state;
+  }, false);
+  const [color, setColor] = useState(() => {
+    const player = players.find((player) => player.uname === user.uname);
+    if(player) {
+      return player.color;
+    }
+    return "#3cccbc";
+  });
+
+  const handleColorChange = (color: string) => {
+    socket.emit("changeColor", roomCode, user, color);
+  }
+  useEffect(() => {
+    const mouseUpHandler = (e) => {
+      if (!colorPickerRef.current.contains(e.target) && isColorPickerOpen && !colorButtonRef.current.contains(e.target)) {
+        toggleColorPicker();
+      }
+    };
+    document.addEventListener("mouseup", mouseUpHandler);
+    if(!isColorPickerOpen && players?.length>0) {
+      socket.emit("updateColor", roomCode, user, color);
+    }
+    return ()=>{
+      document.removeEventListener("mouseup", mouseUpHandler)
+    }
+  }, [isColorPickerOpen, toggleColorPicker,socket,roomCode,user,color]);
   return (
     <motion.div
       className="abolute rounded overflow-hidden shadow-lg text-center w-5/6 sm:w-4/6 md:w-1/2 lg:w-1/3 bg-bg-secondary p-5 py-9"
@@ -30,6 +71,11 @@ const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize, sHasStar
       <h1 className="text-4xl font-semibold text-primary mb-5">
         Chain Reaction
       </h1>
+      {sHasStarted && (
+        <div className="font-semibold text-lg mb-5">
+          Waiting for current game to end...
+        </div>
+      )}
       <div className="flex flex-row justify-around items-center mb-5">
         {navigator.share! && (
           <motion.button
@@ -51,7 +97,7 @@ const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize, sHasStar
           <MdContentCopy />
         </motion.button>
       </div>
-      <div className="flex flex-row items-center justify-evenly">
+      <div className="flex flex-row items-center justify-evenly relative">
         <select
           className="appearance-none block w-1/3
           px-3
@@ -114,14 +160,32 @@ const Lobby = ({ players, isReady, setIsReady, boardSize, setBoardSize, sHasStar
           </div>
         );
       })}
-      <motion.button
-        onClick={setIsReady}
-        className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
-        whileHover={{ scale: players.length > 0 ? 1.1 : 1 }}
-        disabled={players.length > 0 ? (sHasStarted?true:false) : true}
-      >
-        {isReady ? "UnReady" : "I am Ready!"}
-      </motion.button>
+      <div className="relative flex items-center justify-evenly">
+        <motion.button
+          onClick={toggleColorPicker}
+          className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
+          disabled={isReady}
+          ref={colorButtonRef}
+        >
+          ColorPicker
+        </motion.button>
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-2/3 "
+          ref={colorPickerRef}
+        >
+          {isColorPickerOpen && (
+            <HexColorPicker color={color} onChange={setColor} />
+          )}
+        </div>
+        <motion.button
+          onClick={setIsReady}
+          className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
+          whileHover={{ scale: players.length > 0 ? 1.1 : 1 }}
+          disabled={players.length > 0 ? (sHasStarted ? true : false) : true}
+        >
+          {isReady ? "UnReady" : "I am Ready!"}
+        </motion.button>
+      </div>
     </motion.div>
   );
 };
