@@ -8,7 +8,6 @@ import { SocketContextProvider } from "./contexts/SocketContext";
 import AnimatedRoutes from "./components/AnimatedRoutes";
 import Navbar from "./components/Navbar";
 import { motion } from "framer-motion";
-import MotionToast from "./components/MotionToast";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <DarkModeContextProvider>
