@@ -6,6 +6,7 @@ import { useContext, useEffect, useReducer, useRef, useState } from "react";
 import SocketContext from "../contexts/SocketContext";
 import { HexColorPicker } from "react-colorful";
 import UserContext from "../contexts/UserContext";
+import "./Lobby.css"
 
 const Lobby = ({
   players,
@@ -154,8 +155,8 @@ const Lobby = ({
       </div>
       {players.map((player) => {
         return (
-          <div key={player.id}>
-            {player.uname} - {player.color} -{" "}
+          <div key={player.id} className="flex items-center justify-center">
+            {player.uname} - {<div className="w-20px h-10px" style={{backgroundColor:player.color}}>{player.color}</div>} -{" "}
             {player.isReady ? "Ready" : "Not Ready"}
           </div>
         );
@@ -163,28 +164,35 @@ const Lobby = ({
       <div className="relative flex items-center justify-evenly">
         <motion.button
           onClick={toggleColorPicker}
-          className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
+          className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-slate-500"
           disabled={isReady}
           ref={colorButtonRef}
+          whileHover={{ scale: players.length > 0 ? 1.1 : 1 }}
         >
-          ColorPicker
+          {isColorPickerOpen ? "Lock color" : "ColorPicker"}
         </motion.button>
-        <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-2/3 "
-          ref={colorPickerRef}
-        >
-          {isColorPickerOpen && (
-            <HexColorPicker color={color} onChange={setColor} />
-          )}
-        </div>
         <motion.button
           onClick={setIsReady}
-          className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-slate-500"
+          className="bg-brand-primary text-brand-tertiary font-bold py-2 px-4 rounded mt-5 disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-slate-500"
           whileHover={{ scale: players.length > 0 ? 1.1 : 1 }}
-          disabled={players.length > 0 ? (sHasStarted ? true : false) : true}
+          disabled={
+            players.length > 0
+              ? sHasStarted || isColorPickerOpen
+                ? true
+                : false
+              : true
+          }
         >
           {isReady ? "UnReady" : "I am Ready!"}
         </motion.button>
+      </div>
+      <div
+        className="flex items-center justify-center mt-4"
+        ref={colorPickerRef}
+      >
+        {isColorPickerOpen && (
+          <HexColorPicker color={color} onChange={setColor} />
+        )}
       </div>
     </motion.div>
   );

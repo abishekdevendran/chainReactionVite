@@ -1,0 +1,11 @@
+.react-colorful{
+  height:24px !important
+}
+
+.react-colorful__saturation {
+  display: none !important
+}
+
+.react-colorful__hue {
+  border-radius: 8px 8px 8px 8px !important
+}
