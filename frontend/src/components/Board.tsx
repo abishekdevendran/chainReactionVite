@@ -366,7 +366,7 @@ const Board = ({
 
   return (
     <motion.div
-      className={`font-poppins h-full w-5/6 flex text-center items-stretch justify-evenly rounded-md p-2 mb-2 flex-col lg:flex-row select-none`}
+      className={`font-poppins h-full w-5/6 flex text-center items-stretch justify-around rounded-md p-2 mb-2 flex-col lg:flex-row lg:items-center lg:justify-center select-none`}
       style={{ backgroundColor: players[turn]?.color }}
       initial={{ x: "-100vw", y: 0 }}
       animate={{ x: 0, y: 0 }}
@@ -406,9 +406,7 @@ const Board = ({
           )}
         </div>
       </div>
-      <div className="containerBoard self-center w-full h-full max-h-full max-w-full grid justify-items-center
-      items-stretch
-      ">
+      <div className="containerBoard self-center w-full h-full max-h-full max-w-full grid justify-items-center">
         <div
           style={{ aspectRatio: `${n}/${m}` }}
           className="board max-h-full max-w-full w-max min-h-max bg-white flex flex-col flex-nowrap items-center justify-center rounded-lg"
