@@ -41,12 +41,9 @@ const Lobby = ({
     if(player) {
       return player.color;
     }
-    return "#3cccbc";
+    return "#7f2ccb";
   });
-
-  const handleColorChange = (color: string) => {
-    socket.emit("changeColor", roomCode, user, color);
-  }
+  // const [tempColor, setTempColor] = useState<string| null>();
   useEffect(() => {
     const mouseUpHandler = (e) => {
       if (!colorPickerRef.current.contains(e.target) && isColorPickerOpen && !colorButtonRef.current.contains(e.target)) {
@@ -61,9 +58,11 @@ const Lobby = ({
       document.removeEventListener("mouseup", mouseUpHandler)
     }
   }, [isColorPickerOpen, toggleColorPicker,socket,roomCode,user,color]);
+
   return (
     <motion.div
       className="abolute rounded overflow-hidden shadow-lg text-center w-5/6 sm:w-4/6 md:w-1/2 lg:w-1/3 bg-bg-secondary p-5 py-9"
+      style={{backgroundColor: isColorPickerOpen && color}}
       initial={{ x: "-100%" }}
       animate={{ x: 0 }}
       exit={{ x: "100%" }}

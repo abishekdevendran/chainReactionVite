@@ -20,12 +20,17 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         </BrowserRouter>
         <Toaster>
           {(t) => (
-            <MotionToast t={t}/>
-            // <motion.div
-            // >
-            //   {resolveValue(t.message, t)}
-            //   {t.icon}
-            // </motion.div>
+            <motion.div
+              className="bg-bg-secondary text-primary p-3 rounded-3xl ease-in-out transition-colors"
+              initial={{ y: "-100%" }}
+              animate={{
+                y: t.visible ? "0%" : "-200%",
+                opacity: t.visible ? 1 : 0,
+              }}
+              exit={{ opacity: 0, y: "-200%" }}
+            >
+              {resolveValue(t.message, t)}
+            </motion.div>
           )}
         </Toaster>
       </SocketContextProvider>
