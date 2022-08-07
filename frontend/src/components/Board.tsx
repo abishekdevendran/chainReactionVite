@@ -365,15 +365,11 @@ const Board = ({
   }, [volumeItem, volumeVisibility, toggleVolumeVisibility]);
 
   return (
-    <motion.div
+    <div
       className={`font-poppins h-full w-5/6 flex text-center items-stretch justify-around rounded-md p-2 mb-2 flex-col lg:flex-row lg:items-center lg:justify-center select-none`}
       style={{ backgroundColor: players[turn]?.color }}
-      initial={{ x: "-100vw", y: 0 }}
-      animate={{ x: 0, y: 0 }}
-      exit={{ x: "100vw", y: 0 }}
-      transition={{ duration: 0.5 }}
     >
-      <div className="top-container flex items-center justify-center m-2">
+      <div className="top-container flex items-center justify-center m-2 lg:w-1/5">
         <div className="titles flex items-center justify-center text-center">
           {players[turn].uname}
           {"'s turn "}
@@ -409,7 +405,7 @@ const Board = ({
       <div className="containerBoard self-center w-full h-full max-h-full max-w-full grid justify-items-center">
         <div
           style={{ aspectRatio: `${n}/${m}` }}
-          className="board max-h-full max-w-full w-max min-h-max bg-white flex flex-col flex-nowrap items-center justify-center rounded-lg"
+          className="board self-stretch max-h-full max-w-full w-max min-h-max bg-white flex flex-col flex-nowrap items-center justify-center rounded-lg"
         >
           {board.map((row, i) => {
             return (
@@ -462,7 +458,7 @@ const Board = ({
           );
         })}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

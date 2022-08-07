@@ -6,10 +6,6 @@ const Gamemanager = ({players, setPlayers, hasStarted, setHasStarted,boardSize,s
   return (
       <motion.div
         className="absolute h-full w-full max-h-full max-w-full pt-24 flex flex-col items-center justify-center"
-        initial={{ x: "-100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ duration: 0.5 }}
       >
         <Board
           n={boardSize.m}
