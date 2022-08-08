@@ -7,5 +7,5 @@ A multiplayer chain reaction game made with ReactJS, TailwindCSS, Vite, SocketIO
 <img alt="GitHub Closed Issues" src="https://img.shields.io/github/issues-closed/abishekdevendran/chainReactionVite" />
 <img alt="GitHub Issues" src="https://img.shields.io/github/issues/abishekdevendran/chainReactionVite" />
 <img alt="GitHub Last Commit" src="https://img.shields.io/github/last-commit/abishekdevendran/chainReactionVite" />
-[![Heroku](https://heroku-badge.herokuapp.com/?app=chainReactionVite&svg=1)]
+<img alt="GitHub Heroku" src="https://heroku-badge.herokuapp.com/?app=chainReactionVite&svg=1" />
 </p?
