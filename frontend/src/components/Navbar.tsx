@@ -12,14 +12,18 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import DarkModeContext from "../contexts/DarkModeContext";
 import UserContext from "../contexts/UserContext";
 import { motion } from "framer-motion";
+import SocketContext from "../contexts/SocketContext";
+import { FaCircle } from "react-icons/fa";
 
 const Navbar = () => {
   const [nav, setNav] = useState(false);
   const [mainNav, setMainNav] = useState(true);
+  const [userCount, setUserCount] = useState<number>(0);
   const { user, setUser } = useContext(UserContext);
   const { darkMode, setDarkMode } = useContext(DarkModeContext);
   const navItem = useRef<any>(null);
   const navigate = useNavigate();
+  const { socket } = useContext(SocketContext);
 
   const logoutHandler = async () => {
     setUser({ name: null, isLoggedIn: false, sessionId: null, loginCount: 0 });
@@ -39,6 +43,16 @@ const Navbar = () => {
       document.removeEventListener("mouseup", mouseUpHandler);
     };
   }, [nav, navItem]);
+
+  useEffect(() => {
+    socket.on("concurrentCount", (concurrentCount) => {
+      console.log(concurrentCount);
+      setUserCount(concurrentCount);
+    });
+    return () => {
+      socket.off("concurrentCount");
+    };
+  }, [userCount]);
 
   return (
     <div
@@ -65,6 +79,7 @@ const Navbar = () => {
         <div className="right flex">
           {!user.isLoggedIn ? (
             <ul className="hidden sm:flex sm:items-center sm:text-right">
+              <li>{userCount}</li>
               <li className="p-2 hover:opacity-80 cursor-pointer">
                 <NavLink to="login" state={{ from: true }}>
                   Login
@@ -73,6 +88,14 @@ const Navbar = () => {
             </ul>
           ) : (
             <ul className="hidden sm:flex sm:items-center sm:text-right">
+              <li>
+                <div className="flex items-center justify-center px-2">
+                  <FaCircle color="lime" size={20} />
+                  <div className="flex items-center justify-center px-2 absolute text-black">
+                    {userCount}
+                  </div>
+                </div>
+              </li>
               <li className="p-2 cursor-default font-semibold">{`Welcome, ${user.uname}`}</li>
               <li
                 className="p-2 hover:opacity-80 cursor-pointer"
@@ -108,6 +131,9 @@ const Navbar = () => {
                     Login
                   </NavLink>
                 </li>
+                <li className="p-8 py-8 text-3xl border-b-2 border-t-2 border-brand-primary text-right w-full">
+                  {"Users online: " + userCount}
+                </li>
               </ul>
             ) : (
               <ul
@@ -116,17 +142,20 @@ const Navbar = () => {
                   nav ? "left-0" : "-left-full"
                 }`}
               >
-                <li className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full font-semibold">
+                <li className="p-8 py-8 text-3xl border-t-2 border-brand-primary text-right w-full font-semibold">
                   {`Welcome, ${user.uname}`}
                 </li>
                 <li
-                  className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-b-2 border-t-2 border-brand-primary text-right w-full"
+                  className="p-8 py-8 text-3xl hover:text-brand-secondary cursor-pointer border-t-2 border-brand-primary text-right w-full"
                   onClick={() => {
                     logoutHandler();
                     setNav(false);
                   }}
                 >
                   Logout
+                </li>
+                <li className="p-8 py-8 text-3xl border-b-2 border-t-2 border-brand-primary text-right w-full">
+                  {"Users online: " + userCount}
                 </li>
               </ul>
             )}

@@ -25,6 +25,7 @@ const io = new Server(httpServer, {
 console.log(`Server started on port ${PORT}`);
 
 let rooms = [];
+let concurrentCount=0;
 let colors = [
   "#66664D",
   "#991AFF",
@@ -39,6 +40,9 @@ let colors = [
 ];
 
 io.on("connection", (socket) => {
+  concurrentCount++;
+  io.emit("concurrentCount",concurrentCount);
+  console.log("done",concurrentCount);
   socket.on("roomJoin", (roomCode, user, fn) => {
     socket.join(roomCode);
     console.log("joined room: " + roomCode);
@@ -131,6 +135,12 @@ io.on("connection", (socket) => {
     console.log("forfeit");
     socket.to(roomCode).emit("playerForfeit", id);
   });
+
+  socket.on("disconnect",()=>{
+    concurrentCount--;
+    io.emit("concurrentCount", concurrentCount);
+    console.log("done", concurrentCount);
+  })
 });
 
 io.sockets.adapter.on("delete-room", (roomCode) => {
