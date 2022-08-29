@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { offlineFallback } from "workbox-recipes";
+import { offlineFallback, staticResourceCache } from "workbox-recipes";
 import { setDefaultHandler } from "workbox-routing";
 import { NetworkOnly } from "workbox-strategies";
 
@@ -23,9 +23,10 @@ const assetHashes = self.__WB_MANIFEST;
 console.log(assetHashes);
 
 // Sets a default Network Only handler, but consider writing your own handlers, too!
+staticResourceCache();
 setDefaultHandler(new NetworkOnly());
 
 // HTML to serve when the site is offline
 offlineFallback({
-  pageFallback: "/offline.html",
+  pageFallback: "/index.html",
 });
